@@ -1,0 +1,107 @@
+:root {
+            --primary-yellow: #ffcc00;
+            --dark-bg: #121212;
+            --card-bg: #1e1e1e;
+            --success-green: #00C851;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* Header Padrão Admin (Consistente com a tela de relatórios) */
+        header {
+            background-color: #000000;
+            border-bottom: 2px solid var(--primary-yellow);
+            padding: 15px 30px;
+        }
+
+        .logo-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary-yellow);
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+            margin: 0;
+        }
+
+        .user-area span {
+            color: #aaaaaa;
+            margin-right: 15px;
+        }
+
+        /* Container Principal */
+        .admin-container {
+            max-width: 1000px; /* Um pouco menor que os relatórios, pois tem menos colunas */
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            font-family: 'Orbitron', sans-serif;
+            border-left: 4px solid var(--primary-yellow);
+            padding-left: 12px;
+            margin-bottom: 30px;
+        }
+
+        /* Tabela customizada */
+        .table-responsive {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid #333;
+            overflow: hidden;
+        }
+
+        .table-epi {
+            margin-bottom: 0;
+            color: #ffffff;
+        }
+
+        .table-epi thead {
+            background-color: #000000;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .table-epi th {
+            color: var(--primary-yellow) !important;
+            border-bottom: 2px solid var(--primary-yellow) !important;
+            padding: 15px;
+        }
+
+        .table-epi td {
+            padding: 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #2a2a2a;
+            background-color: var(--card-bg);
+            color: #ffffff;
+        }
+
+        /* Botão de Ação (Atender Solicitação) */
+        .btn-atender {
+            background-color: transparent;
+            color: var(--primary-yellow);
+            border: 1px solid var(--primary-yellow);
+            font-size: 0.85rem;
+            padding: 5px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-atender:hover {
+            background-color: var(--primary-yellow);
+            color: #000;
+            box-shadow: 0 0 10px rgba(255, 204, 0, 0.4);
+        }
+
+        /* Status Badge */
+        .badge-pendente {
+            background-color: rgba(255, 204, 0, 0.1);
+            color: var(--primary-yellow);
+            border: 1px solid var(--primary-yellow);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }

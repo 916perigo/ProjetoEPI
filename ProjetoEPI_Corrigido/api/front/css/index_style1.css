@@ -1,0 +1,151 @@
+ :root {
+                --primary-yellow: #ffcc00;
+                --dark-bg: #121212;
+                --card-bg: #1e1e1e;
+            }
+
+            body {
+                background-color: var(--dark-bg);
+                color: white;
+                font-family: 'Roboto', sans-serif;
+                height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+                margin: 0;
+            }
+
+            /* Efeito de Partículas ao Fundo (Sutil) */
+            .bg-animation {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -1;
+                background: radial-gradient(circle at center, #222 0%, #000 100%);
+            }
+
+            /* Card de Login */
+            .login-card {
+                background-color: var(--card-bg);
+                border: 2px solid var(--primary-yellow);
+                border-radius: 15px;
+                padding: 40px;
+                width: 100%;
+                max-width: 400px;
+                box-shadow: 0 0 20px rgba(255, 204, 0, 0.2);
+                transform: translateY(30px);
+                opacity: 0;
+                animation: slideUp 0.8s forwards ease-out;
+            }
+
+            @keyframes slideUp {
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            .login-card h2 {
+                font-family: 'Orbitron', sans-serif;
+                color: var(--primary-yellow);
+                text-align: center;
+                margin-bottom: 30px;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+            }
+
+            /* Estilização dos Inputs */
+            .form-control {
+                background-color: #2a2a2a;
+                border: 1px solid #444;
+                color: white;
+                padding: 12px;
+                margin-bottom: 20px;
+                transition: all 0.3s;
+                
+            }
+
+            .form-control:focus {
+                background-color: #333;
+                border-color: var(--primary-yellow);
+                box-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+                color: white;
+            }
+
+            /* Botão de Login */
+            .btn-login {
+                background-color: var(--primary-yellow);
+                color: black;
+                font-weight: bold;
+                text-transform: uppercase;
+                width: 100%;
+                padding: 12px;
+                border: none;
+                border-radius: 5px;
+                transition: 0.3s;
+                font-family: 'Orbitron', sans-serif;
+            }
+
+            .btn-login:hover {
+                background-color: #e6b800;
+                box-shadow: 0 0 15px var(--primary-yellow);
+                transform: scale(1.02);
+            }
+
+            /* Efeito de Scan na borda */
+            .login-card::before {
+                content: '';
+                position: absolute;
+                top: -2px;
+                left: -2px;
+                width: 0;
+                height: 0;
+                background: transparent;
+                border: 2px solid transparent;
+                border-radius: 15px;
+            }
+
+            /* Mensagem de Erro */
+            #error-msg {
+                color: #ff4444;
+                font-size: 0.9rem;
+                text-align: center;
+                display: none;
+                margin-bottom: 15px;
+            }
+
+            .footer-text {
+                text-align: center;
+                font-size: 0.75rem;
+                margin-top: 20px;
+                color: #777;
+            }
+            /* Estilização dos links de navegação inferior */
+        .auth-secondary-links {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .auth-secondary-links a {
+            color: #888;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+        }
+
+        .auth-secondary-links a:hover {
+            color: var(--primary-yellow);
+            text-shadow: 0 0 8px rgba(255, 204, 0, 0.6);
+        }
+
+        .auth-secondary-links .separator {
+            color: #444;
+        }
+        .form-control::placeholder {
+            color: #ffffff;
+            opacity: 0.6;
+        }

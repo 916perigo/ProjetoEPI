@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Dashboard EPI - Home</title>
+</head>
+<body class="bg-[#1A1A1A] text-white font-sans">
+
+    <header class="border-b border-gray-700 bg-[#262626] p-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div id="avatarInicial" class="w-10 h-10 rounded-full bg-yellow-400 flex items-center justify-center text-black font-bold text-lg">?</div>
+            <p class="font-semibold text-sm" id="nomeUsuario">Carregando...</p>
+        </div>
+        <button onclick="logout()" class="text-red-500 text-sm border border-red-500/50 px-3 py-1 rounded hover:bg-red-500/10 transition">Logout</button>
+    </header>
+
+    <main class="max-w-4xl mx-auto p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <a href="index2.html?v=2" class="bg-yellow-500 text-black font-bold py-4 rounded-xl text-center shadow-lg hover:bg-yellow-400 transition">NOVA VERIFICAÇÃO IA</a>
+            <a href="solicitar.html" class="bg-gray-800 text-white font-bold py-4 rounded-xl text-center border border-gray-600 hover:border-gray-400 transition">SOLICITAR NOVOS EPI'S</a>
+        </div>
+
+        <section>
+            <h3 class="text-gray-400 font-medium mb-4 italic">Meus Equipamentos Atuais:</h3>
+            <div id="lista-epis" class="space-y-3">
+                <p class="text-gray-600">Carregando equipamentos...</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script>
+        const usuario = JSON.parse(localStorage.getItem('usuarioLogado') || '{}');
+        if (usuario && usuario.nome) {
+            const cargo = usuario.cargo ? usuario.cargo.charAt(0).toUpperCase() + usuario.cargo.slice(1) : 'Operacional';
+            document.getElementById('nomeUsuario').textContent = usuario.nome + ' - ' + cargo;
+            document.getElementById('avatarInicial').textContent = usuario.nome.charAt(0).toUpperCase();
+
+            if (usuario.cargo === 'admin') {
+                const adminBtn = document.createElement('a');
+                adminBtn.href = 'pagina_admin.html';
+                adminBtn.className = 'bg-blue-600 text-white font-bold py-4 rounded-xl text-center shadow-lg hover:bg-blue-500 transition col-span-full';
+                adminBtn.textContent = 'PAINEL ADMINISTRATIVO';
+                document.querySelector('.grid').appendChild(adminBtn);
+            }
+        }
+        function logout() {
+            localStorage.removeItem('usuarioLogado');
+            window.location.href = 'index.html';
+        }
+    </script>
+    <script src="js/script.js?v=2"></script>
+</body>
+</html>

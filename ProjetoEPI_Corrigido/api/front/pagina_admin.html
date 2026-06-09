@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo | EPI Check</title>
+  <link rel="stylesheet" href="css/pagina_admin.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span style="font-family:'Inter',sans-serif; font-weight:700; font-size:1.3rem; color:#ffd700; letter-spacing:1px;">EPI Check</span>
+  </div>
+  <div class="user-area">
+    <span id="nomeAdmin">Olá, Admin</span>
+    <button onclick="logout()">Sair</button>
+  </div>
+</header>
+
+<button id="backBtn" class="hidden" onclick="goHome()">⬅ Voltar</button>
+
+<!-- DASHBOARD -->
+<main id="homePage">
+  <h1>Central de Controle</h1>
+  <div class="cards">
+    <div class="card" onclick="goTo('relatorios')">
+      <h2>Relatórios</h2>
+      <p>Visualizar registros de verificação</p>
+    </div>
+    <div class="card" onclick="goTo('solicitacoes')">
+      <h2>Solicitações de EPI</h2>
+      <p>Ver pedidos recebidos</p>
+    </div>
+  </div>
+</main>
+
+<!-- RELATÓRIOS -->
+<main id="relatoriosPage" class="hidden">
+  <h1>Relatórios de Verificação</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Funcionário</th>
+        <th>E-mail</th>
+        <th>Status</th>
+        <th>Data / Hora</th>
+      </tr>
+    </thead>
+    <tbody id="relatoriosTable">
+      <tr><td colspan="4" style="text-align:center;padding:20px;color:#888;">Carregando...</td></tr>
+    </tbody>
+  </table>
+</main>
+
+<!-- SOLICITAÇÕES -->
+<main id="solicitacoesPage" class="hidden">
+  <h1>Solicitações de EPI</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Funcionário</th>
+        <th>EPI</th>
+        <th>Data e Hora</th>
+      </tr>
+    </thead>
+    <tbody id="solicitacoesTable">
+      <tr><td colspan="3" style="text-align:center;padding:20px;color:#888;">Nenhuma solicitação no momento.</td></tr>
+    </tbody>
+  </table>
+</main>
+
+<script src="js/auth.js?v=2"></script>
+<script>
+  const usuarioInfo = JSON.parse(localStorage.getItem('usuarioLogado') || '{}');
+  if (usuarioInfo.cargo !== 'admin') {
+      alert('Acesso negado. Apenas administradores.');
+      window.location.href = 'pagina_principal.html';
+  } else {
+      document.getElementById('nomeAdmin').textContent = 'Olá, ' + usuarioInfo.nome;
+  }
+</script>
+<script src="js/pagina_admin.js?v=4"></script>
+</body>
+</html>

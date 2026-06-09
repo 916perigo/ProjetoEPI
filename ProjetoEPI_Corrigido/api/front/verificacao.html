@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Verificação IA | EPI Check</title>
+</head>
+<body class="bg-[#1A1A1A] text-white p-6">
+    <div class="max-w-md mx-auto">
+        <header class="flex justify-between mb-6">
+            <a href="pagina_principal.html" class="text-yellow-500">← Voltar</a>
+            <span class="text-xs text-gray-500 italic" id="infoUsuario">Carregando...</span>
+        </header>
+
+        <div class="relative w-full aspect-square bg-black rounded-3xl border-2 border-yellow-500 mb-6 overflow-hidden">
+            <div class="absolute inset-0 flex items-center justify-center text-yellow-500/30">CÂMERA ATIVA...</div>
+            <div class="absolute top-5 left-5 border border-green-500 text-green-500 p-1 text-[10px]">CAPACETE DETECTADO</div>
+        </div>
+
+        <div class="bg-[#262626] p-4 rounded-xl border border-gray-700 mb-6">
+            <h4 class="text-xs font-bold text-gray-400 mb-2 uppercase">Checklist IA</h4>
+            <ul class="text-sm space-y-1">
+                <li class="text-green-400">✓ Capacete Proteção</li>
+                <li class="text-green-400">✓ Botas de Segurança</li>
+                <li class="text-red-400">✗ Luvas Anti-Corte (Não Detectado)</li>
+            </ul>
+        </div>
+
+        <button id="btnValidar" class="w-full bg-yellow-500 text-black font-bold py-4 rounded-xl hover:bg-yellow-400 transition">VALIDAR AGORA</button>
+    </div>
+
+    <script>
+        // Proteção de rota inline (sem depender de auth.js)
+        const usuarioStr = localStorage.getItem('usuarioLogado');
+        if (!usuarioStr) {
+            window.location.href = 'index.html';
+        }
+
+        const usuario = JSON.parse(usuarioStr || '{}');
+        if (usuario && usuario.nome) {
+            document.getElementById('infoUsuario').textContent = usuario.nome;
+        }
+
+        document.getElementById('btnValidar').addEventListener('click', async function() {
+            // Desabilitar botão para evitar duplo clique
+            this.disabled = true;
+            this.textContent = 'ENVIANDO...';
+
+            if (!usuario.id_usuario) {
+                alert('Sessão expirada. Faça login novamente.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const statusLeitura = 'Reprovado';
+
+            // URL direta para o arquivo PHP dedicado (sem depender do roteador)
+            const API_URL = 'http://localhost/ProjetoEPI_Corrigido/ProjetoEPI_Corrigido/api/front_livros/public/verificar.php';
+
+            try {
+                const resposta = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id_usuario: usuario.id_usuario,
+                        status: statusLeitura
+                    })
+                });
+
+                const resultado = await resposta.json();
+                console.log('Resposta do servidor:', resultado);
+
+                if (resposta.ok) {
+                    alert('Verificação Concluída e SALVA com sucesso! Vá em Relatórios para conferir.');
+                    window.location.href = 'pagina_principal.html';
+                } else {
+                    alert('Erro ao salvar verificação: ' + (resultado.error || 'Erro desconhecido.') + '\nDetalhes: ' + (resultado.details || ''));
+                    this.disabled = false;
+                    this.textContent = 'VALIDAR AGORA';
+                }
+            } catch (erro) {
+                console.error('Erro de conexão:', erro);
+                alert('Erro de conexão ao salvar verificação: ' + erro.message);
+                this.disabled = false;
+                this.textContent = 'VALIDAR AGORA';
+            }
+        });
+    </script>
+</body>
+</html>

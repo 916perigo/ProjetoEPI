@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - Solicitações de EPI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../front_livros/css/relatorios.css">
+    
+</head>
+<body>
+
+    <header class="d-flex justify-content-between align-items-center">
+        <h1 class="logo-title">EPI Check <span style="font-size: 0.6em; color: #fff;">| Admin</span></h1>
+        <div class="user-area d-flex align-items-center">
+            <span>Olá, <strong>Administrador</strong></span>
+            <a href="/login/logout" class="btn btn-sm btn-outline-warning">Sair</a>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="page-title">Solicitações de EPI Recebidas</h2>
+            <a href="/admin" class="btn btn-secondary">← Voltar à Central</a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-epi table-hover">
+                <thead>
+                    <tr>
+                        <th width="30%">Funcionário</th>
+                        <th width="30%">EPI Solicitado</th>
+                        <th width="20%">Data / Hora</th>
+                        <th width="20%" class="text-center">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (!empty($listaSolicitacoes)): ?>
+                        <?php foreach ($listaSolicitacoes as $pedido): ?>
+                            <tr>
+                                <td>
+                                    <strong><?php echo htmlspecialchars($pedido['funcionario']); ?></strong>
+                                    <br>
+                                    <small class="text-muted">Matrícula: <?php echo htmlspecialchars($pedido['matricula']); ?></small>
+                                </td>
+                                
+                                <td>
+                                    <span class="text-white-50">
+                                        <?php echo htmlspecialchars($pedido['epi_nome']); ?>
+                                    </span>
+                                </td>
+                                
+                                <td>
+                                    <?php echo date('d/m/Y H:i', strtotime($pedido['data_hora'])); ?>
+                                    <br>
+                                    <span class="badge-pendente mt-1 d-inline-block">Pendente</span>
+                                </td>
+                                
+                                <td class="text-center">
+                                    <form action="/admin/atenderSolicitacao" method="POST" class="d-inline">
+                                        <input type="hidden" name="id_solicitacao" value="<?php echo $pedido['id']; ?>">
+                                        <button type="submit" class="btn btn-atender">Marcar como Entregue</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                Nenhuma solicitação de EPI pendente no momento.
+                            </td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

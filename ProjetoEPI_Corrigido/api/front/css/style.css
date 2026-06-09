@@ -1,0 +1,194 @@
+/* ==========================================
+   PADRÃO VISUAL INDUSTRIAL - EPI CHECK
+   ========================================== */
+
+:root {
+    --primary-yellow: #ffcc00;
+    --dark-bg: #121212;
+    --card-bg: #1e1e1e;
+    --danger-red: #ff4444;
+    --success-green: #00C851;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: var(--dark-bg);
+    color: #ffffff;
+}
+
+.container {
+    background-color: var(--card-bg);
+    padding: 30px;
+    border-radius: 12px;
+    border: 1px solid #333;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    width: 90%;
+    max-width: 500px;
+}
+
+h1 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--primary-yellow);
+    margin-bottom: 25px;
+    font-size: 24px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* Container da Câmera com Linha de Scan Animada */
+.video-wrapper {
+    position: relative;
+    width: 100%;
+    background: #000000;
+    border: 2px solid #333;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    aspect-ratio: 4/3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Efeito de laser amarelo passando na tela */
+.video-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--primary-yellow);
+    box-shadow: 0 0 10px var(--primary-yellow);
+    animation: scanMove 3s infinite linear;
+    z-index: 5;
+}
+
+@keyframes scanMove {
+    0% { top: 0; }
+    50% { top: 100%; }
+    100% { top: 0; }
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1); /* Efeito Espelho para o usuário se posicionar melhor */
+}
+
+.controls {
+    margin-bottom: 20px;
+}
+
+/* Botões Estilo Interface de Monitoramento */
+button {
+    background-color: transparent;
+    color: var(--primary-yellow);
+    border: 1px solid var(--primary-yellow);
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Orbitron', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+button:hover:not(:disabled) {
+    background-color: var(--primary-yellow);
+    color: #000000;
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
+}
+
+button:disabled {
+    background-color: #222222;
+    color: #555555;
+    border-color: #333333;
+    cursor: not-allowed;
+}
+
+/* Box de Resultados */
+.result-box {
+    background-color: #000000;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.result-box h3 {
+    font-family: 'Orbitron', sans-serif;
+    margin-top: 0;
+    font-size: 18px;
+    color: var(--primary-yellow);
+    letter-spacing: 1px;
+}
+
+.approval-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+/* Botões do Painel de Decisão (Aprovar/Reprovar) */
+.approve {
+    background-color: rgba(0, 200, 81, 0.1) !important;
+    color: var(--success-green) !important;
+    border: 1px solid var(--success-green) !important;
+}
+
+.approve:hover {
+    background-color: var(--success-green) !important;
+    color: #000000 !important;
+    box-shadow: 0 0 15px rgba(0, 200, 81, 0.4) !important;
+}
+
+.disapprove {
+    background-color: rgba(255, 68, 68, 0.1) !important;
+    color: var(--danger-red) !important;
+    border: 1px solid var(--danger-red) !important;
+}
+
+.disapprove:hover {
+    background-color: var(--danger-red) !important;
+    color: #000000 !important;
+    box-shadow: 0 0 15px rgba(255, 68, 68, 0.4) !important;
+}
+
+.hidden {
+    display: none;
+}
+
+#loading {
+    color: var(--primary-yellow);
+    opacity: 0.8;
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+/* Alertas de Feedback da Validação */
+#message {
+    margin-top: 20px;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: 500;
+    background-color: rgba(0, 200, 81, 0.15);
+    color: var(--success-green);
+    border: 1px solid var(--success-green);
+}
+
+#message.error {
+    background-color: rgba(255, 68, 68, 0.15);
+    color: var(--danger-red);
+    border: 1px solid var(--danger-red);
+}

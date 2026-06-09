@@ -1,0 +1,117 @@
+:root {
+            --primary-yellow: #ffcc00;
+            --dark-bg: #121212;
+            --card-bg: #1e1e1e;
+            --danger-red: #ff4444;
+            --success-green: #00C851;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* Header Padrão Admin */
+        header {
+            background-color: #000000;
+            border-bottom: 2px solid var(--primary-yellow);
+            padding: 15px 30px;
+        }
+
+        .logo-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary-yellow);
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+            margin: 0;
+        }
+
+        .user-area span {
+            color: #aaaaaa;
+            margin-right: 15px;
+        }
+
+        /* Container Principal */
+        .admin-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            font-family: 'Orbitron', sans-serif;
+            border-left: 4px solid var(--primary-yellow);
+            padding-left: 12px;
+            margin-bottom: 30px;
+        }
+
+        /* Tabela customizada */
+        .table-responsive {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid #333;
+            overflow: hidden;
+        }
+
+        .table-epi {
+            margin-bottom: 0;
+            color: #ffffff;
+        }
+
+        .table-epi thead {
+            background-color: #000000;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .table-epi th {
+            color: var(--primary-yellow) !important;
+            border-bottom: 2px solid var(--primary-yellow) !important;
+            padding: 15px;
+        }
+
+        .table-epi td {
+            padding: 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #2a2a2a;
+            background-color: var(--card-bg);
+            color: #ffffff;
+        }
+
+        /* Thumbnail da foto de auditoria */
+        .img-audit {
+            width: 60px;
+            height: 45px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid var(--primary-yellow);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .img-audit:hover {
+            transform: scale(1.2);
+        }
+
+        /* Badges de Status */
+        .badge-status {
+            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        .badge-approved {
+            background-color: rgba(0, 200, 81, 0.2);
+            color: var(--success-green);
+            border: 1px solid var(--success-green);
+        }
+
+        .badge-denied {
+            background-color: rgba(255, 68, 68, 0.2);
+            color: var(--danger-red);
+            border: 1px solid var(--danger-red);
+        }
