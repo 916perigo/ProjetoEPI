@@ -13,15 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// index.php fica em api/front_livros/public/
-// Subindo 2 niveis chega em api/
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../../app/controller/UsuarioController.php';
 
 $database = new Database();
 $db = $database->getConnection();
 
-// Suporte a roteamento via query string (?route=login) e via URI path
 if (isset($_GET['route'])) {
     $route = trim($_GET['route'], '/');
 } else {
@@ -66,8 +63,8 @@ try {
         case 'relatorio':
         case 'relatorios':
             if ($method === 'GET') {
-                                $stmt = $db->query("SELECT l.id_leitura, u.nome as nome_usuario, u.email as email_usuario, l.data_hora as data_leitura, l.status as status_leitura FROM leituras_epi l JOIN usuarios u ON l.id_usuario = u.id_usuario ORDER BY l.data_hora DESC");
-                                $relatorio = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $stmt = $db->query("SELECT l.id_leitura, u.nome as nome_usuario, u.email as email_usuario, l.data_hora as data_leitura, l.status as status_leitura FROM leituras_epi l JOIN usuarios u ON l.id_usuario = u.id_usuario ORDER BY l.data_hora DESC");
+                $relatorio = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 http_response_code(200);
                 echo json_encode($relatorio);
                 exit;
@@ -166,6 +163,24 @@ try {
                 } else {
                     http_response_code(400);
                     echo json_encode(['error' => 'Dados incompletos']);
+                }
+                exit;
+            }
+            if ($method === 'DELETE') {
+                $data = json_decode(file_get_contents('php://input'), true);
+                if (isset($data['id_solicitacao'])) {
+                    $stmt = $db->prepare("DELETE FROM solicitacoes WHERE id_solicitacao = :id_solicitacao");
+                    $stmt->bindParam(':id_solicitacao', $data['id_solicitacao']);
+                    if ($stmt->execute()) {
+                        http_response_code(200);
+                        echo json_encode(['success' => 'Solicitação excluída com sucesso']);
+                    } else {
+                        http_response_code(500);
+                        echo json_encode(['error' => 'Erro ao excluir solicitação']);
+                    }
+                } else {
+                    http_response_code(400);
+                    echo json_encode(['error' => 'ID não informado']);
                 }
                 exit;
             }

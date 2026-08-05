@@ -5,6 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel Administrativo | EPI Check</title>
   <link rel="stylesheet" href="css/pagina_admin.css">
+  <style>
+    .btn-action-group {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+    .btn-entregue {
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .btn-entregue:hover {
+      background-color: #218838;
+    }
+    .btn-excluir {
+      background-color: #dc3545;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .btn-excluir:hover {
+      background-color: #c82333;
+    }
+  </style>
 </head>
 <body>
 
@@ -62,10 +93,11 @@
         <th>Funcionário</th>
         <th>EPI</th>
         <th>Data e Hora</th>
+        <th style="text-align:center;">Ações</th>
       </tr>
     </thead>
     <tbody id="solicitacoesTable">
-      <tr><td colspan="3" style="text-align:center;padding:20px;color:#888;">Nenhuma solicitação no momento.</td></tr>
+      <tr><td colspan="4" style="text-align:center;padding:20px;color:#888;">Nenhuma solicitação no momento.</td></tr>
     </tbody>
   </table>
 </main>
@@ -79,7 +111,33 @@
   } else {
       document.getElementById('nomeAdmin').textContent = 'Olá, ' + usuarioInfo.nome;
   }
+
+  function marcarComoEntregue(button) {
+    const row = button.closest('tr');
+    const statusTag = row.querySelector('.status-tag');
+    if (statusTag) {
+      statusTag.textContent = 'Entregue';
+      statusTag.style.color = '#28a745';
+    } else {
+      alert('Solicitação marcada como Entregue!');
+    }
+    button.disabled = true;
+    button.style.opacity = '0.5';
+    button.textContent = 'Entregue';
+  }
+
+  function excluirSolicitacao(button) {
+    if (confirm('Deseja realmente excluir esta solicitação?')) {
+      const row = button.closest('tr');
+      row.remove();
+      
+      const tbody = document.getElementById('solicitacoesTable');
+      if (tbody.children.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#888;">Nenhuma solicitação no momento.</td></tr>';
+      }
+    }
+  }
 </script>
-<script src="js/pagina_admin.js?v=4"></script>
+<script src="js/pagina_admin.js?v=99"></script>
 </body>
 </html>

@@ -1,25 +1,28 @@
-
 document.addEventListener('DOMContentLoaded', () => {
- 
-    // 1.Referência aos elementos da tela
+
+    // 1. Referência aos elementos da tela
     const listaEquipamentos = document.getElementById('lista-epis');
 
-    // 2.Base de dados simulada
-    const meusEPIs = [
-        { nome: "Capacete de Segurança (Classe B)", status: "Regular", ca: "12345", cor: "text-green-500" },
-        { nome: "Luva de Vaqueta Cano Curto", status: "Troca em 5 dias", ca: "32154", cor: "text-yellow-500" },
-        { nome: "Protetor Auricular Plug", status: "Vencido", ca: "98765", cor: "text-red-500" },
-        { nome: "Óculos de Proteção Incolor", status: "Regular", ca: "45612", cor: "text-green-500" }
-    ];
+    // 2. Base de dados (Vazia - Pronta para receber dados reais via API ou banco)
+    const meusEPIs = [];
 
-    // 3.Função para renderizar os EPIs na tela
+    // 3. Função para renderizar os EPIs na tela
     function renderizarDashboard() {
-        if (!listaEquipamentos) return; // Só executa se estiver na página Home
+        if (!listaEquipamentos) return;
 
-        // Limpa o "Carregando..."
         listaEquipamentos.innerHTML = "";
 
-        // Cria o HTML para cada equipamento
+        // Caso não haja equipamentos cadastrados
+        if (meusEPIs.length === 0) {
+            listaEquipamentos.innerHTML = `
+                <div class="bg-[#262626] p-6 rounded-xl border border-gray-700 text-center">
+                    <p class="text-gray-400 font-medium">Nenhum EPI vinculado ao seu perfil no momento.</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Cria o HTML para cada equipamento quando houver dados
         meusEPIs.forEach(epi => {
             const card = `
                 <div class="bg-[#262626] p-4 rounded-xl border border-gray-700 flex justify-between items-center hover:border-gray-500 transition-all">
@@ -45,14 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 4.Chamada inicial
+    // 4. Chamada inicial
     renderizarDashboard();
 
-    // 5.Exemplo de como enviar a solicitação (Página solicitar.html)
+    // 5. Envio de solicitação
     const formSolicitacao = document.querySelector('form');
     if (formSolicitacao) {
         formSolicitacao.addEventListener('submit', (e) => {
-            //Se quiser processar via JS antes de enviar para o PHP
             console.log("Processando pedido de EPI...");
         });
     }

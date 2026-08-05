@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EPI CHECK - Portaria Segura</title>
+  <link rel="stylesheet" href="css/senha_admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="card-container">
+    <header class="header">
+      <h1 class="title">EPI CHECK</h1>
+      <p class="subtitle">PORTARIA SEGURA</p>
+    </header>
+
+    <form class="form">
+      <div class="input-group">
+        <label for="password">Senha Administrativa</label>
+        <input type="password" id="password" placeholder="••••••••" required>
+      </div>
+
+      <button type="submit" class="btn-primary">ACESSAR CADASTRO</button>
+      <button type="button" class="btn-secondary" onclick="history.back()">VOLTAR</button>
+    </form>
+
+    <footer class="footer">
+      <p class="copyright">© 2026 SENAI - Sistema de Monitoramento de Segurança</p>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.querySelector('.form');
+      const passwordInput = document.getElementById('password');
+      const SENHA_CORRETA = "admin123"; 
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const senhaDigitada = passwordInput.value.trim();
+
+        if (senhaDigitada === SENHA_CORRETA) {
+          window.location.href = 'cadastro_usuario.html';
+        } else {
+          alert('Senha administrativa incorreta! Tente novamente.');
+          passwordInput.value = '';
+          passwordInput.focus();
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
