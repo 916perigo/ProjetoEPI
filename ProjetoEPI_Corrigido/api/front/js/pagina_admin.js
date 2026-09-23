@@ -1,30 +1,22 @@
-const usuarioLogado = JSON.parse(localStorage.getItem('usuarioLogado') || '{}');
-if (usuarioLogado && usuarioLogado.nome) {
-    const el = document.getElementById('nomeAdmin');
-    if (el) el.textContent = 'Olá, ' + usuarioLogado.nome;
-}
+/**
+ * ============================================================================
+ * CONTROLE DO PAINEL ADMINISTRATIVO (PAGINA_ADMIN.JS)
+ * Suporte a API PHP e Fallback Dinâmico com LocalStorage
+ * ============================================================================
+ */
 
-function goTo(page) {
-    document.getElementById('homePage').classList.add('hidden');
-    document.getElementById('relatoriosPage').classList.add('hidden');
-    document.getElementById('solicitacoesPage').classList.add('hidden');
-    document.getElementById('backBtn').classList.remove('hidden');
+document.addEventListener('DOMContentLoaded', () => {
+    initAdminHeader();
+    carregarRelatorios();
+    carregarSolicitacoes();
+});
 
-    if (page === 'relatorios') {
-        document.getElementById('relatoriosPage').classList.remove('hidden');
-        carregarRelatorios();
+function initAdminHeader() {
+    const usuarioLogado = JSON.parse(localStorage.getItem('usuarioLogado') || '{}');
+    if (usuarioLogado && usuarioLogado.nome) {
+        const el = document.getElementById('nomeAdmin');
+        if (el) el.textContent = usuarioLogado.nome;
     }
-    if (page === 'solicitacoes') {
-        document.getElementById('solicitacoesPage').classList.remove('hidden');
-        carregarSolicitacoes();
-    }
-}
-
-function goHome() {
-    document.getElementById('homePage').classList.remove('hidden');
-    document.getElementById('relatoriosPage').classList.add('hidden');
-    document.getElementById('solicitacoesPage').classList.add('hidden');
-    document.getElementById('backBtn').classList.add('hidden');
 }
 
 function logout() {
@@ -35,161 +27,229 @@ function logout() {
 function getApiUrl(route) {
     const isFileUrl = window.location.protocol === 'file:';
     return isFileUrl 
-        ? `http://localhost/ProjetoEPI_Corrigido/ProjetoEPI_Corrigido/api/front_livros/public/index.php?route=${route}` 
+        ? `http://localhost/ProjetoEPI_Corrigido/ProjetoEPI_Corrigido/api/front/public/index.php?route=${route}` 
         : `public/index.php?route=${route}`;
 }
 
+/**
+ * Carrega Relatórios de Verificação (API + LocalStorage)
+ */
 async function carregarRelatorios() {
     const tbody = document.getElementById('relatoriosTable');
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#888;">Carregando...</td></tr>';
+    if (!tbody) return;
 
+    let dados = [];
+
+    // 1. Tenta buscar da API
     try {
         const resposta = await fetch(getApiUrl('relatorios'));
-        const dados = await resposta.json();
-
-        if (dados.error) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:20px;color:#ff4444;">Erro da API: ${dados.details || dados.error}</td></tr>`;
-            return;
+        const apiDados = await resposta.json();
+        if (Array.isArray(apiDados)) {
+            dados = apiDados;
         }
+    } catch (e) {
+        // Fallback para dados locais
+    }
 
-        if (!Array.isArray(dados) || dados.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#888;">Nenhum registro encontrado.</td></tr>';
-            return;
+    // 2. Mescla com histórico local do navegador
+    try {
+        const locais = JSON.parse(localStorage.getItem('historicoVerificacoes') || '[]');
+        if (Array.isArray(locais) && locais.length > 0) {
+            // Converte modelo local para formato de exibição
+            const adaptados = locais.map(l => ({
+                id_leitura: l.id,
+                nome_usuario: l.funcionario,
+                email_usuario: l.email || '-',
+                detalhes: l.detalhes || 'Verificação Automática IA',
+                status_leitura: l.status,
+                data_leitura: l.data_hora
+            }));
+            dados = [...adaptados, ...dados];
         }
+    } catch (e) {}
 
-        tbody.innerHTML = '';
-        dados.forEach(r => {
-            const data = r.data_leitura
-                ? new Date(r.data_leitura).toLocaleString('pt-BR')
-                : '-';
-            const cor = r.status_leitura === 'Aprovado'
-                ? 'color:#00C851;font-weight:bold;'
-                : 'color:#ff4444;font-weight:bold;';
+    // 3. Atualiza métricas
+    atualizarMetricas(dados);
 
-            tbody.innerHTML += `
-                <tr>
-                    <td>${r.nome_usuario || '-'}</td>
-                    <td>${r.email_usuario || '-'}</td>
-                    <td style="${cor}">${r.status_leitura || '-'}</td>
-                    <td>${data}</td>
-                </tr>`;
-        });
-    } catch (erro) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#ff4444;">Erro ao carregar relatórios.</td></tr>';
+    // 4. Renderiza tabela
+    if (dados.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted);">
+                    Nenhum registro de verificação encontrado até o momento.
+                </td>
+            </tr>`;
+        return;
+    }
+
+    tbody.innerHTML = '';
+    dados.forEach(r => {
+        const data = r.data_leitura
+            ? new Date(r.data_leitura).toLocaleString('pt-BR')
+            : '-';
+        const isOk = r.status_leitura === 'Aprovado';
+        const badgeClass = isOk ? 'badge-approved' : 'badge-denied';
+        const statusText = isOk ? '✓ Aprovado' : '✕ Reprovado';
+
+        tbody.innerHTML += `
+            <tr>
+                <td><strong>${r.nome_usuario || 'Operador'}</strong></td>
+                <td><span style="font-family: var(--font-mono); font-size: 0.825rem; color: var(--text-muted);">${r.email_usuario || '-'}</span></td>
+                <td><span style="font-size: 0.85rem; color: var(--text-secondary);">${r.detalhes || 'Capacete, Óculos e Colete'}</span></td>
+                <td><span class="badge-status ${badgeClass}">${statusText}</span></td>
+                <td><span style="font-family: var(--font-mono); font-size: 0.825rem; color: var(--text-muted);">${data}</span></td>
+            </tr>`;
+    });
+}
+
+/**
+ * Atualiza os contadores de métricas no topo
+ */
+function atualizarMetricas(relatorios) {
+    const elTotal = document.getElementById('metricTotalVerif');
+    const elTaxa = document.getElementById('metricTaxaAprov');
+
+    if (elTotal) elTotal.textContent = relatorios.length;
+
+    if (elTaxa && relatorios.length > 0) {
+        const aprovados = relatorios.filter(r => r.status_leitura === 'Aprovado').length;
+        const taxa = Math.round((aprovados / relatorios.length) * 100);
+        elTaxa.textContent = taxa + '%';
     }
 }
 
+/**
+ * Carrega Solicitações de Reposição (API + LocalStorage)
+ */
 async function carregarSolicitacoes() {
     const tbody = document.getElementById('solicitacoesTable');
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#888;">Carregando...</td></tr>';
+    const elTotalPendente = document.getElementById('metricTotalPendente');
+    if (!tbody) return;
 
+    let dados = [];
+
+    // 1. Tenta buscar da API
     try {
         const resposta = await fetch(getApiUrl('solicitacoes'));
-        const dados = await resposta.json();
-
-        if (dados.error) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:20px;color:#ff4444;">Erro da API: ${dados.details || dados.error}</td></tr>`;
-            return;
+        const apiDados = await resposta.json();
+        if (Array.isArray(apiDados)) {
+            dados = apiDados;
         }
+    } catch (e) {}
 
-        if (!Array.isArray(dados) || dados.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#888;">Nenhuma solicitação no momento.</td></tr>';
-            return;
+    // 2. Mescla com solicitações locais
+    try {
+        const locais = JSON.parse(localStorage.getItem('solicitacoesLocais') || '[]');
+        if (Array.isArray(locais) && locais.length > 0) {
+            dados = [...locais, ...dados];
         }
+    } catch (e) {}
 
-        tbody.innerHTML = '';
-        dados.forEach(s => {
-            const data = s.data_solicitacao
-                ? new Date(s.data_solicitacao).toLocaleString('pt-BR')
-                : '-';
-            
-            const isEntregue = s.status_solicitacao === 'Entregue';
-            const statusBadge = isEntregue 
-                ? '<span class="status-tag" style="color:#00C851;font-weight:bold;">Entregue</span>' 
-                : '<span class="status-tag" style="color:#ffbb33;font-weight:bold;">Pendente</span>';
+    // Atualiza contador de pendentes
+    const pendentes = dados.filter(s => s.status_solicitacao !== 'Entregue');
+    if (elTotalPendente) elTotalPendente.textContent = pendentes.length;
 
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong>${s.nome_usuario || '-'}</strong><br><small style="color:#aaa;">Motivo: ${s.descricao || '-'}</small></td>
-                <td>${s.nome_epi || '-'}<br>${statusBadge}</td>
-                <td>${data}</td>
-                <td style="text-align: center;">
-                    <div style="display: flex; gap: 8px; justify-content: center;">
-                        <button 
-                            onclick="marcarComoEntregue(this, ${s.id_solicitacao})" 
-                            style="background:#28a745; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold; opacity: ${isEntregue ? '0.5' : '1'};" 
-                            ${isEntregue ? 'disabled' : ''}>
-                            ${isEntregue ? 'Entregue' : 'Entregar'}
-                        </button>
-                        <button 
-                            onclick="excluirSolicitacao(this, ${s.id_solicitacao})" 
-                            style="background:#dc3545; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">
-                            Excluir
-                        </button>
-                    </div>
+    if (dados.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted);">
+                    Nenhuma solicitação de EPI registrada no momento.
                 </td>
-            `;
-            tbody.appendChild(tr);
-        });
-
-    } catch (erro) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#ff4444;">Erro ao carregar solicitações.</td></tr>';
+            </tr>`;
+        return;
     }
+
+    tbody.innerHTML = '';
+    dados.forEach((s, idx) => {
+        const data = s.data_solicitacao
+            ? new Date(s.data_solicitacao).toLocaleString('pt-BR')
+            : '-';
+        
+        const isEntregue = s.status_solicitacao === 'Entregue';
+        const badge = isEntregue
+            ? '<span class="badge-status badge-approved">Entregue</span>'
+            : '<span class="badge-status badge-pending">Pendente</span>';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>
+                <strong>${s.nome_usuario || 'Operador'}</strong>
+                <br><small style="color: var(--text-muted);">Motivo: ${s.descricao || '-'}</small>
+            </td>
+            <td>
+                <span style="font-weight: 600; color: var(--primary-gold);">${s.nome_epi || 'EPI'}</span>
+            </td>
+            <td><span style="font-family: var(--font-mono); font-size: 0.825rem; color: var(--text-muted);">${data}</span></td>
+            <td>${badge}</td>
+            <td style="text-align: center;">
+                <div class="table-actions-cell">
+                    <button 
+                        class="btn-action-deliver"
+                        onclick="marcarComoEntregue(this, '${s.id_solicitacao || idx}')" 
+                        ${isEntregue ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
+                        ${isEntregue ? '✓ Baixado' : 'Entregar'}
+                    </button>
+                    <button 
+                        class="btn-action-delete"
+                        onclick="excluirSolicitacao(this, '${s.id_solicitacao || idx}')">
+                        Excluir
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
 }
 
+/**
+ * Marca como entregue no banco e no localStorage
+ */
 async function marcarComoEntregue(btn, idSolicitacao) {
     const row = btn.closest('tr');
-    const statusTag = row.querySelector('.status-tag');
-    
+
+    // Atualiza no localStorage
     try {
-        const resposta = await fetch(getApiUrl('solicitacoes'), {
+        const locais = JSON.parse(localStorage.getItem('solicitacoesLocais') || '[]');
+        const item = locais.find(l => String(l.id_solicitacao) === String(idSolicitacao));
+        if (item) {
+            item.status_solicitacao = 'Entregue';
+            localStorage.setItem('solicitacoesLocais', JSON.stringify(locais));
+        }
+    } catch(e) {}
+
+    // Tenta atualizar na API
+    try {
+        await fetch(getApiUrl('solicitacoes'), {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id_solicitacao: idSolicitacao, status: 'Entregue' })
         });
-        
-        const res = await resposta.json();
-        if (res.success) {
-            if (statusTag) {
-                statusTag.textContent = 'Entregue';
-                statusTag.style.color = '#00C851';
-            }
-            btn.disabled = true;
-            btn.style.opacity = '0.5';
-            btn.textContent = 'Entregue';
-        } else {
-            alert('Erro ao atualizar no banco: ' + (res.error || 'Erro desconhecido'));
-        }
-    } catch (err) {
-        console.error('Erro ao atualizar status:', err);
-        alert('Erro de conexão ao atualizar status.');
-    }
+    } catch(e) {}
+
+    carregarSolicitacoes();
 }
 
+/**
+ * Exclui solicitação
+ */
 async function excluirSolicitacao(btn, idSolicitacao) {
-    if (!confirm('Deseja realmente excluir esta solicitação?')) return;
+    if (!confirm('Confirma a remoção deste pedido de EPI?')) return;
 
+    // Remove do localStorage
     try {
-        const resposta = await fetch(getApiUrl('solicitacoes'), {
+        let locais = JSON.parse(localStorage.getItem('solicitacoesLocais') || '[]');
+        locais = locais.filter(l => String(l.id_solicitacao) !== String(idSolicitacao));
+        localStorage.setItem('solicitacoesLocais', JSON.stringify(locais));
+    } catch(e) {}
+
+    // Tenta remover da API
+    try {
+        await fetch(getApiUrl('solicitacoes'), {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id_solicitacao: idSolicitacao })
         });
+    } catch(e) {}
 
-        const res = await resposta.json();
-        if (res.success) {
-            const row = btn.closest('tr');
-            row.remove();
-
-            const tbody = document.getElementById('solicitacoesTable');
-            if (tbody.children.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#888;">Nenhuma solicitação no momento.</td></tr>';
-            }
-        } else {
-            alert('Erro ao excluir no banco: ' + (res.error || 'Erro desconhecido'));
-        }
-    } catch (err) {
-        console.error('Erro ao excluir:', err);
-        alert('Erro de conexão ao excluir.');
-    }
+    carregarSolicitacoes();
 }

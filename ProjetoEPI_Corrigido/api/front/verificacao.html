@@ -3,89 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <title>Verificação IA | EPI Check</title>
+    <title>Verificação de EPIs | EPI Check</title>
+    <!-- Fontes e Design System Unificado -->
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- TensorFlow.js e Teachable Machine Image -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.18.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8.4/dist/teachablemachine-image.min.js"></script>
 </head>
-<body class="bg-[#1A1A1A] text-white p-6">
-    <div class="max-w-md mx-auto">
-        <header class="flex justify-between mb-6">
-            <a href="pagina_principal.html" class="text-yellow-500">← Voltar</a>
-            <span class="text-xs text-gray-500 italic" id="infoUsuario">Carregando...</span>
-        </header>
+<body>
 
-        <div class="relative w-full aspect-square bg-black rounded-3xl border-2 border-yellow-500 mb-6 overflow-hidden">
-            <div class="absolute inset-0 flex items-center justify-center text-yellow-500/30">CÂMERA ATIVA...</div>
-            <div class="absolute top-5 left-5 border border-green-500 text-green-500 p-1 text-[10px]">CAPACETE DETECTADO</div>
+    <!-- Header Padrão Unificado -->
+    <header class="app-header">
+        <a href="pagina_principal.html" class="app-brand">
+            <div class="app-brand-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="app-brand-title">EPI <span>CHECK</span></h1>
+                <span class="app-brand-subtitle">Portaria & Segurança</span>
+            </div>
+        </a>
+
+        <div class="app-user-nav">
+            <div class="app-user-badge">
+                <div id="avatarInicial" class="app-avatar">O</div>
+                <div class="app-user-info">
+                    <span id="infoUsuario" class="app-user-name">Operador</span>
+                    <span class="app-user-role" id="modelStatus">Câmera Ativa</span>
+                </div>
+            </div>
+            <button onclick="window.location.href='pagina_principal.html'" class="btn-secondary-epi" style="padding: 0.45rem 0.9rem; font-size: 0.8rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Voltar
+            </button>
+        </div>
+    </header>
+
+    <main class="app-container">
+        <!-- Navegação de Retorno -->
+        <div style="margin-bottom: 1.25rem;">
+            <a href="pagina_principal.html" class="btn-back-link" style="margin-bottom: 0;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                </svg>
+                Painel Principal / Inspeção de EPIs
+            </a>
         </div>
 
-        <div class="bg-[#262626] p-4 rounded-xl border border-gray-700 mb-6">
-            <h4 class="text-xs font-bold text-gray-400 mb-2 uppercase">Checklist IA</h4>
-            <ul class="text-sm space-y-1">
-                <li class="text-green-400">✓ Capacete Proteção</li>
-                <li class="text-green-400">✓ Botas de Segurança</li>
-                <li class="text-red-400">✗ Luvas Anti-Corte (Não Detectado)</li>
-            </ul>
-        </div>
+        <div class="scanner-layout">
+            
+            <!-- Coluna 1: Câmera de Verificação -->
+            <div class="app-card scanner-card">
+                <div class="panel-title-box">
+                    <div>
+                        <h2 class="panel-title">Câmera de Monitoramento</h2>
+                        <p class="panel-subtitle">Posicione-se frontalmente à lente</p>
+                    </div>
+                    <span class="badge-status badge-approved">
+                        <span class="live-dot" style="margin-right: 3px;"></span>
+                        <span id="camStatusText">Ao Vivo</span>
+                    </span>
+                </div>
 
-        <button id="btnValidar" class="w-full bg-yellow-500 text-black font-bold py-4 rounded-xl hover:bg-yellow-400 transition">VALIDAR AGORA</button>
+                <div class="camera-container" id="cameraWrapper">
+                    <video id="webcamVideo" autoplay playsinline muted></video>
+
+                    <!-- Estado Previsto em Tempo Real -->
+                    <div class="cam-ai-label">
+                        <span style="color: var(--text-muted);">Status da Detecção:</span>
+                        <span id="aiLabelText" class="ai-detected-state">Aguardando posicionamento...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coluna 2: Checklist dos EPIs com Porcentagens & Validação -->
+            <div class="app-card scanner-card">
+                <div class="panel-title-box">
+                    <div>
+                        <h2 class="panel-title">Checklist de EPIs</h2>
+                        <p class="panel-subtitle">Conformidade e segurança em tempo real</p>
+                    </div>
+                    <span class="badge-status badge-approved">Norma NR-6</span>
+                </div>
+
+                <div class="checklist-content">
+                    <div class="epi-items-list">
+                        <!-- 1. Capacete -->
+                        <div class="epi-card-item" id="card-capacete">
+                            <div class="epi-card-header">
+                                <div class="epi-card-info">
+                                    <div class="epi-icon-box">🪖</div>
+                                    <div>
+                                        <h4 class="epi-name">Capacete de Segurança</h4>
+                                        <span class="epi-desc">Proteção craniana contra impacto</span>
+                                    </div>
+                                </div>
+                                <span class="epi-badge-pill" id="status-capacete">Detectando...</span>
+                            </div>
+                            <div class="epi-progress-wrapper">
+                                <div class="epi-progress-meta">
+                                    <span id="pct-capacete">Confiança: 0%</span>
+                                    <span>Mín. 75%</span>
+                                </div>
+                                <div class="epi-progress-track">
+                                    <div class="epi-progress-fill" id="bar-capacete"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Óculos de Proteção -->
+                        <div class="epi-card-item" id="card-oculos">
+                            <div class="epi-card-header">
+                                <div class="epi-card-info">
+                                    <div class="epi-icon-box">👓</div>
+                                    <div>
+                                        <h4 class="epi-name">Óculos de Proteção</h4>
+                                        <span class="epi-desc">Vedação ocular contra partículas</span>
+                                    </div>
+                                </div>
+                                <span class="epi-badge-pill" id="status-oculos">Detectando...</span>
+                            </div>
+                            <div class="epi-progress-wrapper">
+                                <div class="epi-progress-meta">
+                                    <span id="pct-oculos">Confiança: 0%</span>
+                                    <span>Mín. 70%</span>
+                                </div>
+                                <div class="epi-progress-track">
+                                    <div class="epi-progress-fill" id="bar-oculos"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Colete Refletivo -->
+                        <div class="epi-card-item" id="card-colete">
+                            <div class="epi-card-header">
+                                <div class="epi-card-info">
+                                    <div class="epi-icon-box">🦺</div>
+                                    <div>
+                                        <h4 class="epi-name">Colete Refletivo</h4>
+                                        <span class="epi-desc">Visibilidade de alta intensidade</span>
+                                    </div>
+                                </div>
+                                <span class="epi-badge-pill" id="status-colete">Detectando...</span>
+                            </div>
+                            <div class="epi-progress-wrapper">
+                                <div class="epi-progress-meta">
+                                    <span id="pct-colete">Confiança: 0%</span>
+                                    <span>Mín. 75%</span>
+                                </div>
+                                <div class="epi-progress-track">
+                                    <div class="epi-progress-fill" id="bar-colete"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botão de Validação Principal -->
+                    <div style="margin-top: 0.75rem;">
+                        <button id="btnValidar" class="btn-primary-epi" style="width: 100%; padding: 0.95rem; font-size: 1rem;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                            Validar Conformidade
+                        </button>
+                        <p style="text-align: center; font-size: 0.75rem; color: var(--text-dim); margin-top: 0.55rem;">
+                            Verificação instantânea de conformidade com a Norma NR-6
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal de Resultado Detalhado da Validação -->
+    <div class="modal-overlay" id="modalResultado">
+        <div class="modal-dialog-epi">
+            <div class="result-header">
+                <div class="result-status-icon approved" id="resStatusIcon">✓</div>
+                <h3 class="result-title approved" id="resTitle">ACESSO LIBERADO</h3>
+                <p class="panel-subtitle" id="resDesc">Todos os EPIs obrigatórios foram detectados com conformidade pela IA.</p>
+            </div>
+
+            <div class="result-summary-card">
+                <div class="result-row">
+                    <span class="text-muted">Funcionário / Operador:</span>
+                    <strong id="resNomeOperador">Carregando...</strong>
+                </div>
+                <div class="result-row">
+                    <span class="text-muted">Data & Hora:</span>
+                    <span id="resDataHora" style="font-family: var(--font-mono);">22/09/2026 14:00:00</span>
+                </div>
+                <div class="result-row">
+                    <span class="text-muted">Capacete:</span>
+                    <span id="resCapacete">OK (95%)</span>
+                </div>
+                <div class="result-row">
+                    <span class="text-muted">Óculos:</span>
+                    <span id="resOculos">OK (90%)</span>
+                </div>
+                <div class="result-row">
+                    <span class="text-muted">Colete:</span>
+                    <span id="resColete">OK (92%)</span>
+                </div>
+                
+                <img id="resSnapshot" class="snapshot-preview" alt="Snapshot da Auditoria">
+            </div>
+
+            <div style="display: flex; gap: 0.75rem;">
+                <button type="button" class="btn-primary-epi" style="flex: 1;" id="btnFecharModal">
+                    NOVA LEITURA
+                </button>
+                <a href="pagina_principal.html" class="btn-secondary-epi">
+                    CONCLUIR
+                </a>
+            </div>
+        </div>
     </div>
 
-    <script>
-        // Proteção de rota inline (sem depender de auth.js)
-        const usuarioStr = localStorage.getItem('usuarioLogado');
-        if (!usuarioStr) {
-            window.location.href = 'index.html';
-        }
+    <!-- Script de Execução do Scanner -->
+    <script src="js/scanner.js"></script>
 
-        const usuario = JSON.parse(usuarioStr || '{}');
-        if (usuario && usuario.nome) {
-            document.getElementById('infoUsuario').textContent = usuario.nome;
-        }
-
-        document.getElementById('btnValidar').addEventListener('click', async function() {
-            // Desabilitar botão para evitar duplo clique
-            this.disabled = true;
-            this.textContent = 'ENVIANDO...';
-
-            if (!usuario.id_usuario) {
-                alert('Sessão expirada. Faça login novamente.');
-                window.location.href = 'index.html';
-                return;
-            }
-
-            const statusLeitura = 'Reprovado';
-
-            // URL direta para o arquivo PHP dedicado (sem depender do roteador)
-            const API_URL = 'http://localhost/ProjetoEPI_Corrigido/ProjetoEPI_Corrigido/api/front_livros/public/verificar.php';
-
-            try {
-                const resposta = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        id_usuario: usuario.id_usuario,
-                        status: statusLeitura
-                    })
-                });
-
-                const resultado = await resposta.json();
-                console.log('Resposta do servidor:', resultado);
-
-                if (resposta.ok) {
-                    alert('Verificação Concluída e SALVA com sucesso! Vá em Relatórios para conferir.');
-                    window.location.href = 'pagina_principal.html';
-                } else {
-                    alert('Erro ao salvar verificação: ' + (resultado.error || 'Erro desconhecido.') + '\nDetalhes: ' + (resultado.details || ''));
-                    this.disabled = false;
-                    this.textContent = 'VALIDAR AGORA';
-                }
-            } catch (erro) {
-                console.error('Erro de conexão:', erro);
-                alert('Erro de conexão ao salvar verificação: ' + erro.message);
-                this.disabled = false;
-                this.textContent = 'VALIDAR AGORA';
-            }
-        });
-    </script>
 </body>
 </html>

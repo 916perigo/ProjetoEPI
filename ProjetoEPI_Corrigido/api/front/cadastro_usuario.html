@@ -3,63 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Criar Conta | Sistema de Detecção de EPI</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/cadastrar_usuario.css">
+    <title>Novo Operador | EPI Check</title>
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/index_style1.css">
 </head>
 <body>
 
-    <div class="bg-animation"></div>
-
-    <div class="register-card">
-        <h2>Cadastro de Operador</h2>
+    <div class="login-card" style="max-width: 500px;">
+        <div class="login-header">
+            <div class="login-icon-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="8.5" cy="7.5" r="4"></circle>
+                    <line x1="20" y1="8" x2="20" y2="14"></line>
+                    <line x1="23" y1="11" x2="17" y2="11"></line>
+                </svg>
+            </div>
+            <h2 class="login-title">Cadastro de <span>Operador</span></h2>
+            <p class="login-subtitle">Credenciamento no Sistema EPI Check</p>
+        </div>
         
-        <div id="error-msg" style="display:none; color:#ff4444; text-align:center; margin-bottom:10px;"></div>
-        <div id="success-msg" style="display:none; color:#00C851; text-align:center; margin-bottom:10px;"></div>
+        <div id="error-msg" style="display:none;"></div>
+        <div id="success-msg" style="display:none; background: var(--color-success-bg); border: 1px solid rgba(16,185,129,0.35); color: var(--color-success); padding: 0.75rem 1rem; border-radius: var(--radius-md); font-size: 0.85rem; margin-bottom: 1.25rem; text-align: center;"></div>
 
         <form id="registerForm">
-            <div class="row">
-                <div class="col-md-12 mb-3">
-                    <label class="form-label">Nome Completo</label>
-                    <input type="text" class="form-control" id="name" placeholder="Ex: João Silva" required>
-                </div>
+            <div class="form-group">
+                <label class="form-label">Nome Completo</label>
+                <input type="text" class="form-control-epi" id="name" placeholder="Ex: Lucas Pereira" required>
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">E-mail</label>
-                <input type="email" class="form-control" id="email" placeholder="email@empresa.com" required>
+            <div class="form-group">
+                <label class="form-label">E-mail Corporativo</label>
+                <input type="email" class="form-control-epi" id="email" placeholder="operador@empresa.com" required>
             </div>
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div class="form-group">
                     <label class="form-label">Matrícula (Login)</label>
-                    <input type="text" class="form-control" id="regId" placeholder="000000" required>
+                    <input type="text" class="form-control-epi" id="regId" placeholder="Ex: 104820" required>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Cargo</label>
-                    <select class="form-select" id="role" required>
-                        <option value="" selected disabled>Selecione...</option>
-                        <option value="operador">Operador</option>
+                <div class="form-group">
+                    <label class="form-label">Cargo / Função</label>
+                    <select class="form-control-epi" id="role" required style="background: rgba(12, 18, 32, 0.85);">
+                        <option value="operador" selected>Operador</option>
                         <option value="admin">Administrador</option>
                     </select>
                 </div>
             </div>
 
-            <div class="mb-3">
+            <div class="form-group">
                 <label class="form-label">Senha de Acesso</label>
-                <input type="password" class="form-control" id="newPassword" placeholder="••••••••" required>
-            </div>
-            <div class="password-strength">
-                <div id="strengthBar" class="strength-bar"></div>
+                <input type="password" class="form-control-epi" id="newPassword" placeholder="••••••••" required>
+                <div style="width: 100%; height: 4px; background: rgba(255,255,255,0.08); border-radius: var(--radius-full); margin-top: 0.45rem; overflow: hidden;">
+                    <div id="strengthBar" style="width: 0%; height: 100%; transition: all 0.3s;"></div>
+                </div>
             </div>
 
-            <button type="submit" class="btn-register">Finalizar Cadastro</button>
+            <button type="submit" class="btn-login btn-register" style="margin-top: 0.5rem;">Finalizar Cadastro</button>
         </form>
 
-        <a href="index.html" class="back-link">← Voltar para o Login</a>
+        <div style="text-align: center; margin-top: 1.25rem;">
+            <a href="index.html" class="btn-back-link" style="margin-bottom: 0;">← Voltar para o Login</a>
+        </div>
     </div>
 
-    <script src="js/cadastrar_usuario.js?v=2"></script>
+    <script src="js/cadastrar_usuario.js"></script>
+
 </body>
 </html>

@@ -1,194 +1,397 @@
-/* ==========================================
-   PADRÃO VISUAL INDUSTRIAL - EPI CHECK
-   ========================================== */
+/* ==========================================================================
+   ESTILOS ESPECÍFICOS DO SCANNER IA & CÂMERA (STYLE.CSS)
+   ========================================================================== */
 
-:root {
-    --primary-yellow: #ffcc00;
-    --dark-bg: #121212;
-    --card-bg: #1e1e1e;
-    --danger-red: #ff4444;
-    --success-green: #00C851;
+@import url('theme.css');
+
+.scanner-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: stretch;
 }
 
-body {
-    font-family: 'Roboto', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    background-color: var(--dark-bg);
-    color: #ffffff;
+@media (min-width: 960px) {
+  .scanner-layout {
+    grid-template-columns: 1.05fr 0.95fr;
+    align-items: stretch;
+  }
 }
 
-.container {
-    background-color: var(--card-bg);
-    padding: 30px;
-    border-radius: 12px;
-    border: 1px solid #333;
-    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.5);
-    text-align: center;
-    width: 90%;
-    max-width: 500px;
+/* Cartões do Scanner */
+.scanner-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.5rem;
 }
 
-h1 {
-    font-family: 'Orbitron', sans-serif;
-    color: var(--primary-yellow);
-    margin-bottom: 25px;
-    font-size: 24px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
+/* Viewport da Câmera Ajustado aos Elementos */
+.camera-container {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 420px;
+  background: #060911;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
 }
 
-/* Container da Câmera com Linha de Scan Animada */
-.video-wrapper {
-    position: relative;
-    width: 100%;
-    background: #000000;
-    border: 2px solid #333;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-bottom: 20px;
-    aspect-ratio: 4/3;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.camera-container.verified-ok {
+  border-color: var(--color-success);
+  box-shadow: 0 0 0 1px var(--color-success);
 }
 
-/* Efeito de laser amarelo passando na tela */
-.video-wrapper::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background: var(--primary-yellow);
-    box-shadow: 0 0 10px var(--primary-yellow);
-    animation: scanMove 3s infinite linear;
-    z-index: 5;
+.camera-container.verified-fail {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 1px var(--color-danger);
 }
 
-@keyframes scanMove {
-    0% { top: 0; }
-    50% { top: 100%; }
-    100% { top: 0; }
+#webcamVideo,
+#fallbackCanvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transform: scaleX(-1); /* Efeito Espelho para o usuário se posicionar melhor */
+#webcamVideo {
+  transform: scaleX(-1); /* Espelhamento ergonômico */
 }
 
-.controls {
-    margin-bottom: 20px;
+#overlayCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
 }
 
-/* Botões Estilo Interface de Monitoramento */
-button {
-    background-color: transparent;
-    color: var(--primary-yellow);
-    border: 1px solid var(--primary-yellow);
-    padding: 12px 24px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 600;
-    font-family: 'Orbitron', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
+/* Guias & Feedback da Câmera */
+.camera-hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 15;
 }
 
-button:hover:not(:disabled) {
-    background-color: var(--primary-yellow);
-    color: #000000;
-    box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
+/* Badges Flutuantes na Câmera */
+.cam-top-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  backdrop-filter: blur(8px);
 }
 
-button:disabled {
-    background-color: #222222;
-    color: #555555;
-    border-color: #333333;
-    cursor: not-allowed;
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-success);
 }
 
-/* Box de Resultados */
-.result-box {
-    background-color: #000000;
-    border: 1px solid #333;
-    border-radius: 8px;
-    padding: 15px;
-    margin-top: 10px;
+.cam-ai-label {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.825rem;
+  color: var(--text-secondary);
+  backdrop-filter: blur(8px);
 }
 
-.result-box h3 {
-    font-family: 'Orbitron', sans-serif;
-    margin-top: 0;
-    font-size: 18px;
-    color: var(--primary-yellow);
-    letter-spacing: 1px;
+.ai-detected-state {
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
-.approval-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 15px;
+/* Estrutura do Painel de Checklist */
+.checklist-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
 }
 
-/* Botões do Painel de Decisão (Aprovar/Reprovar) */
-.approve {
-    background-color: rgba(0, 200, 81, 0.1) !important;
-    color: var(--success-green) !important;
-    border: 1px solid var(--success-green) !important;
+.epi-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0.5rem 0 1.25rem 0;
+  flex: 1;
+  justify-content: space-around;
 }
 
-.approve:hover {
-    background-color: var(--success-green) !important;
-    color: #000000 !important;
-    box-shadow: 0 0 15px rgba(0, 200, 81, 0.4) !important;
+.panel-title-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
 }
 
-.disapprove {
-    background-color: rgba(255, 68, 68, 0.1) !important;
-    color: var(--danger-red) !important;
-    border: 1px solid var(--danger-red) !important;
+.panel-title {
+  font-family: var(--font-tech);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.3px;
 }
 
-.disapprove:hover {
-    background-color: var(--danger-red) !important;
-    color: #000000 !important;
-    box-shadow: 0 0 15px rgba(255, 68, 68, 0.4) !important;
+.panel-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
 }
 
-.hidden {
-    display: none;
+/* Cartões Individuais dos EPIs */
+.epi-card-item {
+  background: rgba(18, 26, 43, 0.65);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.15rem;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-#loading {
-    color: var(--primary-yellow);
-    opacity: 0.8;
-    font-style: italic;
-    margin-bottom: 10px;
+.epi-card-item.status-ok {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.05);
 }
 
-/* Alertas de Feedback da Validação */
-#message {
-    margin-top: 20px;
-    padding: 12px;
-    border-radius: 6px;
-    font-weight: 500;
-    background-color: rgba(0, 200, 81, 0.15);
-    color: var(--success-green);
-    border: 1px solid var(--success-green);
+.epi-card-item.status-missing {
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.04);
 }
 
-#message.error {
-    background-color: rgba(255, 68, 68, 0.15);
-    color: var(--danger-red);
-    border: 1px solid var(--danger-red);
+.epi-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.epi-card-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.epi-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+}
+
+.epi-card-item.status-ok .epi-icon-box {
+  background: var(--color-success-bg);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: var(--color-success);
+}
+
+.epi-card-item.status-missing .epi-icon-box {
+  background: var(--color-danger-bg);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: var(--color-danger);
+}
+
+.epi-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.epi-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.epi-badge-pill {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-full);
+}
+
+.epi-badge-pill.ok {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.epi-badge-pill.fail {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Barra de Progresso / Porcentagem de Confiança */
+.epi-progress-wrapper {
+  margin-top: 0.4rem;
+}
+
+.epi-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  margin-bottom: 0.35rem;
+  color: var(--text-muted);
+}
+
+.epi-progress-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.epi-progress-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.epi-progress-fill.fill-ok {
+  background: linear-gradient(90deg, #059669, var(--color-success));
+}
+
+.epi-progress-fill.fill-fail {
+  background: linear-gradient(90deg, #dc2626, var(--color-danger));
+}
+
+/* Botões de Ação da Câmera */
+.cam-actions-bar {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.cam-actions-bar button {
+  flex: 1;
+}
+
+/* Test Simulation Bar (Presets para testar) */
+.test-presets-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.test-presets-bar select {
+  flex: 1;
+  background: rgba(12, 18, 32, 0.9);
+  color: var(--text-primary);
+  border: 1px solid var(--border-card);
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  outline: none;
+}
+
+/* Modal de Resultado da Validação */
+.result-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.result-status-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+}
+
+.result-status-icon.approved {
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success);
+  color: var(--color-success);
+}
+
+.result-status-icon.denied {
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
+}
+
+.result-title {
+  font-family: var(--font-tech);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.result-title.approved { color: var(--color-success); }
+.result-title.denied { color: var(--color-danger); }
+
+.result-summary-card {
+  background: rgba(12, 18, 32, 0.7);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.875rem;
+}
+
+.result-row:last-child {
+  border-bottom: none;
+}
+
+.snapshot-preview {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-card);
+  margin-top: 0.75rem;
 }

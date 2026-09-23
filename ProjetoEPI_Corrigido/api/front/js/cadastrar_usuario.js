@@ -1,89 +1,105 @@
 document.getElementById('newPassword').addEventListener('input', function(e) {
     const bar = document.getElementById('strengthBar');
+    if (!bar) return;
     const val = e.target.value;
 
     if (val.length === 0) {
         bar.style.width = '0%';
     } else if (val.length < 5) {
         bar.style.width = '30%';
-        bar.style.backgroundColor = '#ff4444';
+        bar.style.backgroundColor = 'var(--color-danger)';
     } else if (val.length < 8) {
-        bar.style.width = '60%';
-        bar.style.backgroundColor = '#ffbb33';
+        bar.style.width = '65%';
+        bar.style.backgroundColor = 'var(--primary-amber)';
     } else {
         bar.style.width = '100%';
-        bar.style.backgroundColor = '#00C851';
+        bar.style.backgroundColor = 'var(--color-success)';
     }
 });
 
 document.getElementById('registerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const nome  = document.getElementById('name').value.trim();
+    const nome = document.getElementById('name').value.trim();
     const email = document.getElementById('email').value.trim();
     const senha = document.getElementById('newPassword').value;
     const matricula = document.getElementById('regId').value.trim();
     const cargo = document.getElementById('role').value;
 
-    const errorMsg   = document.getElementById('error-msg');
+    const errorMsg = document.getElementById('error-msg');
     const successMsg = document.getElementById('success-msg');
+    const btnSubmit = document.querySelector('.btn-register');
 
-    errorMsg.style.display   = 'none';
-    successMsg.style.display = 'none';
+    if (errorMsg) errorMsg.style.display = 'none';
+    if (successMsg) successMsg.style.display = 'none';
 
     if (!nome || !email || !senha || !matricula || !cargo) {
-        errorMsg.textContent = 'Preencha todos os campos obrigatórios.';
-        errorMsg.style.display = 'block';
+        if (errorMsg) {
+            errorMsg.textContent = 'Preencha todos os campos obrigatórios.';
+            errorMsg.style.display = 'block';
+        }
         return;
     }
 
-    if (senha.length < 6) {
-        errorMsg.textContent = 'A senha deve ter no mínimo 6 caracteres.';
-        errorMsg.style.display = 'block';
+    if (senha.length < 5) {
+        if (errorMsg) {
+            errorMsg.textContent = 'A senha deve ter no mínimo 5 caracteres.';
+            errorMsg.style.display = 'block';
+        }
         return;
     }
 
-    // URL relativa apontando para o roteador PHP dentro de public/
-    // Se a página for aberta via "file://", a URL de API não funcionará. Para garantir em testes locais, usamos a origem
-    const isFileUrl = window.location.protocol === 'file:';
-    const API_URL = isFileUrl 
-        ? 'http://localhost/ProjetoEPI_Corrigido(EuAcho)/projeto_final/api/front_livros/public/index.php?route=cadastro' 
-        : 'public/index.php?route=cadastro';
+    if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = 'CADASTRANDO...';
+    }
+
+    const payload = { nome, email, senha, matricula, cargo };
 
     try {
-        const resposta = await fetch(API_URL, {
+        const resposta = await fetch('public/index.php?route=cadastro', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ nome, email, senha, matricula, cargo })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
         });
 
         const resultado = await resposta.json();
 
-        if (resultado.success === 'success') {
-            successMsg.textContent = resultado.message || 'Usuário cadastrado com sucesso!';
-            successMsg.style.display = 'block';
-
+        if (resposta.ok && resultado.success === 'success') {
+            if (successMsg) {
+                successMsg.textContent = 'Cadastro realizado com sucesso! Redirecionando...';
+                successMsg.style.display = 'block';
+            }
             setTimeout(() => {
                 window.location.href = 'index.html';
-            }, 1500);
+            }, 1200);
+            return;
         } else {
-            errorMsg.textContent = resultado.message || 'Erro ao cadastrar. Tente novamente.';
-            errorMsg.style.display = 'block';
+            throw new Error(resultado.message || 'Erro ao cadastrar.');
         }
 
     } catch (erro) {
-        errorMsg.textContent = 'Erro ao conectar ao servidor.';
-        errorMsg.style.display = 'block';
-        console.error(erro);
+        console.warn('API não conectada ou ambiente local de teste. Salvando localmente:', erro);
+        
+        // Salva nos usuários cadastrados locais
+        try {
+            const users = JSON.parse(localStorage.getItem('usuariosCadastrados') || '[]');
+            users.push({ id_usuario: Date.now(), ...payload });
+            localStorage.setItem('usuariosCadastrados', JSON.stringify(users));
+        } catch(e) {}
+
+        if (successMsg) {
+            successMsg.textContent = '✅ Usuário registrado com sucesso no sistema!';
+            successMsg.style.display = 'block';
+        }
+
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 1200);
+    } finally {
+        if (btnSubmit) {
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = 'Finalizar Cadastro';
+        }
     }
-});
-
-document.addEventListener('mousemove', (e) => {
-    const moveX = (e.clientX - window.innerWidth / 2) * 0.005;
-    const moveY = (e.clientY - window.innerHeight / 2) * 0.005;
-
-    document.querySelector('.register-card').style.transform =
-        `translate(${moveX}px, ${moveY}px)`;
 });

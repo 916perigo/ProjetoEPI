@@ -3,85 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Admin - Relatórios de Verificação</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../front_livros/css/relatorios.css">
-    
+    <title>Relatórios de Verificação | EPI Check</title>
+    <link rel="stylesheet" href="css/theme.css">
 </head>
 <body>
 
-    <header class="d-flex justify-content-between align-items-center">
-        <h1 class="logo-title">EPI Check <span style="font-size: 0.6em; color: #fff;">| Admin</span></h1>
-        <div class="user-area d-flex align-items-center">
-            <span>Olá, <strong>Administrador</strong></span>
-            <a href="/login/logout" class="btn btn-sm btn-outline-warning">Sair</a>
+    <!-- Header Padrão Unificado -->
+    <header class="app-header">
+        <a href="pagina_principal.html" class="app-brand">
+            <div class="app-brand-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="app-brand-title">EPI <span>CHECK</span></h1>
+                <span class="app-brand-subtitle">Relatórios de Auditoria</span>
+            </div>
+        </a>
+
+        <div class="app-user-nav">
+            <a href="pagina_admin.html" class="btn-secondary-epi" style="padding: 0.45rem 0.9rem; font-size: 0.8rem;">← Painel Admin</a>
+            <a href="pagina_principal.html" class="btn-secondary-epi" style="padding: 0.45rem 0.9rem; font-size: 0.8rem;">Central</a>
         </div>
     </header>
 
-    <div class="admin-container">
-        
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="page-title">Relatórios de Verificação</h2>
-            <a href="/index.html" class="btn btn-secondary">← Voltar à Central</a>
-        </div>
+    <main class="app-container">
+        <a href="pagina_principal.html" class="btn-back-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+            </svg>
+            Voltar ao Dashboard
+        </a>
 
-        <div class="table-responsive">
-            <table class="table table-epi table-hover">
-                <thead>
-                    <tr>
-                        <th width="12%">Foto</th>
-                        <th width="30%">Funcionário</th>
-                        <th width="18%">Estado (IA)</th>
-                        <th width="20%">EPIs Identificados</th>
-                        <th width="20%">Data / Hora</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (!empty($listaRelatorios)): ?>
-                        <?php foreach ($listaRelatorios as $relatorio): ?>
-                            <tr>
-                                <td>
-                                    <img src="<?php echo htmlspecialchars($relatorio['foto_url']); ?>" 
-                                         alt="Foto de Auditoria" 
-                                         class="img-audit"
-                                         onclick="window.open(this.src)">
-                                </td>
-                                
-                                <td>
-                                    <strong><?php echo htmlspecialchars($relatorio['funcionario']); ?></strong>
-                                </td>
-                                
-                                <td>
-                                    <?php if ($relatorio['estado'] === 'Aprovado'): ?>
-                                        <span class="badge-status badge-approved">Aprovado</span>
-                                    <?php else: ?>
-                                        <span class="badge-status badge-denied">Reprovado</span>
-                                    <?php endif; ?>
-                                </td>
-                                
-                                <td>
-                                    <span class="text-white-50">
-                                        <?php echo htmlspecialchars($relatorio['item_usado'] ?? 'Garrafa (Teste MVP)'); ?>
-                                    </span>
-                                </td>
-                                
-                                <td>
-                                    <?php echo date('d/m/Y H:i:s', strtotime($relatorio['data_hora'])); ?>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
+        <div class="app-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2 style="font-family: var(--font-tech); font-size: 1.4rem; color: var(--text-primary); margin-bottom: 0.25rem;">
+                        Histórico de Verificações Realizadas
+                    </h2>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">
+                        Auditorias registradas pela Inteligência Artificial na portaria.
+                    </p>
+                </div>
+                <a href="verificacao.html" class="btn-primary-epi" style="padding: 0.6rem 1.2rem; font-size: 0.85rem;">
+                    + Nova Verificação IA
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="app-table">
+                    <thead>
                         <tr>
-                            <td colspan="5" class="text-center py-5 text-muted">
-                                Nenhum registro de escaneamento encontrado no banco de dados.
-                            </td>
+                            <th width="25%">Funcionário</th>
+                            <th width="20%">E-mail / Matrícula</th>
+                            <th width="25%">Detecção IA</th>
+                            <th width="15%">Estado (IA)</th>
+                            <th width="15%">Data / Hora</th>
                         </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody id="relatoriosTable">
+                        <tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted);">Carregando histórico...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
+    </main>
 
+    <script src="js/pagina_admin.js"></script>
 </body>
 </html>

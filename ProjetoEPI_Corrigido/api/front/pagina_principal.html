@@ -3,53 +3,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <title>Dashboard EPI - Home</title>
-</head>
-<body class="bg-[#1A1A1A] text-white font-sans min-h-screen flex flex-col">
+    <title>Dashboard Principal | EPI Check</title>
+    <link rel="stylesheet" href="css/theme.css">
+    <style>
+        .dashboard-container {
+            max-width: 1040px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 3rem;
+            min-height: calc(100vh - 72px);
+            display: flex;
+            flex-direction: column;
+        }
 
-    <header class="border-b border-gray-700 bg-[#262626] p-4 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <div id="avatarInicial" class="w-10 h-10 rounded-full bg-yellow-400 flex items-center justify-center text-black font-bold text-lg">?</div>
-            <p class="font-semibold text-sm" id="nomeUsuario">Carregando...</p>
+        .dashboard-hero {
+            background: #111827;
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-lg);
+            padding: 2rem 2.25rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .hero-title {
+            font-size: 1.65rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.35rem;
+        }
+
+        .hero-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            max-width: 520px;
+            line-height: 1.45;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .action-card {
+            background: #111827;
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius-lg);
+            padding: 2.25rem 2rem;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 230px;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .action-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(245, 158, 11, 0.45);
+            box-shadow: var(--shadow-md);
+        }
+
+        .action-card-primary {
+            background: #121929;
+            border-color: rgba(245, 158, 11, 0.22);
+        }
+
+        .action-header {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .action-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-md);
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-gold);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .action-card:hover .action-icon {
+            background: var(--primary-amber);
+            color: #000;
+        }
+
+        .action-title {
+            font-family: var(--font-tech);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .action-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .action-footer {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary-gold);
+            transition: gap 0.2s ease;
+        }
+
+        .action-card:hover .action-footer {
+            gap: 0.75rem;
+        }
+
+        .dashboard-footer {
+            margin-top: auto;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .footer-divider {
+            color: var(--border-subtle);
+        }
+
+        .dot-online {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--color-success);
+            margin-right: 0.35rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header Padrão Unificado -->
+    <header class="app-header">
+        <a href="pagina_principal.html" class="app-brand">
+            <div class="app-brand-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="app-brand-title">EPI <span>CHECK</span></h1>
+                <span class="app-brand-subtitle">Portaria & Segurança</span>
+            </div>
+        </a>
+
+        <div class="app-user-nav">
+            <div class="app-user-badge">
+                <div id="avatarInicial" class="app-avatar">O</div>
+                <div class="app-user-info">
+                    <span id="nomeUsuario" class="app-user-name">Carregando...</span>
+                    <span id="cargoUsuario" class="app-user-role">Operador</span>
+                </div>
+            </div>
+            <button onclick="logout()" class="btn-logout" title="Sair do Sistema">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Sair
+            </button>
         </div>
-        <button onclick="logout()" class="text-red-500 text-sm border border-red-500/50 px-3 py-1 rounded hover:bg-red-500/10 transition">Logout</button>
     </header>
 
-    <main class="max-w-2xl mx-auto p-6 flex-1 flex flex-col justify-center w-full">
-        <div class="grid grid-cols-1 gap-6">
-            <a href="verificacao.html" class="bg-yellow-500 text-black font-extrabold py-8 px-6 text-xl rounded-2xl text-center shadow-2xl hover:bg-yellow-400 transform hover:-translate-y-1 transition-all duration-200 uppercase tracking-wide flex items-center justify-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Nova Verificação IA
+    <main class="dashboard-container">
+        <!-- Hero Card de Boas-Vindas -->
+        <div class="dashboard-hero">
+            <div>
+                <span class="badge-status badge-approved" style="margin-bottom: 0.65rem;">
+                    ● Sistema Conectado • Turno Ativo
+                </span>
+                <h2 class="hero-title" id="saudacaoNome">Bem-vindo ao EPI Check</h2>
+                <p class="hero-subtitle">Selecione uma das opções abaixo para gerenciar a rotina de segurança e inspeção de colaboradores.</p>
+            </div>
+        </div>
+
+        <!-- Grade de Ações Principais -->
+        <div class="actions-grid" id="acoesGrid">
+            <!-- 1. Verificação de EPIs -->
+            <a href="verificacao.html" class="action-card action-card-primary">
+                <div>
+                    <div class="action-header">
+                        <div class="action-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                <circle cx="12" cy="13" r="4"></circle>
+                            </svg>
+                        </div>
+                        <h3 class="action-title">Verificação de EPIs</h3>
+                    </div>
+                    <p class="action-desc">Validação em tempo real por câmera para conferência de capacete, óculos de proteção e colete.</p>
+                </div>
+                <div class="action-footer">
+                    Acessar Câmera →
+                </div>
             </a>
-            
-            <a href="solicitar.html" class="bg-gray-800 text-white font-extrabold py-8 px-6 text-xl rounded-2xl text-center border-2 border-gray-600 hover:border-yellow-500 hover:bg-gray-700 transform hover:-translate-y-1 transition-all duration-200 uppercase tracking-wide flex items-center justify-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Solicitar Novos EPI's
+
+            <!-- 2. Solicitar EPIs -->
+            <a href="solicitar.html" class="action-card">
+                <div>
+                    <div class="action-header">
+                        <div class="action-icon" style="background: rgba(59, 130, 246, 0.12); border-color: rgba(59, 130, 246, 0.3); color: #60a5fa;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 4v16m8-8H4"></path>
+                            </svg>
+                        </div>
+                        <h3 class="action-title">Solicitar Novos EPIs</h3>
+                    </div>
+                    <p class="action-desc">Registro de pedidos de substituição ou novos equipamentos para manutenção ou desgaste.</p>
+                </div>
+                <div class="action-footer" style="color: #60a5fa;">
+                    Fazer Pedido →
+                </div>
             </a>
         </div>
+
+        <!-- Rodapé Minimalista do Painel -->
+        <footer class="dashboard-footer">
+            <div class="footer-left">
+                <span>EPI Check • Gestão de Conformidade e Proteção Individual</span>
+                <span class="footer-divider">•</span>
+                <span>Norma Regulamentadora NR-6</span>
+            </div>
+            <div class="footer-right">
+                <span><span class="dot-online"></span>Serviços Operacionais Conectados</span>
+            </div>
+        </footer>
     </main>
 
     <script src="js/auth.js"></script>
     <script>
         const usuario = JSON.parse(localStorage.getItem('usuarioLogado') || '{}');
         if (usuario && usuario.nome) {
-            const cargo = usuario.cargo ? usuario.cargo.charAt(0).toUpperCase() + usuario.cargo.slice(1) : 'Operacional';
-            document.getElementById('nomeUsuario').textContent = usuario.nome + ' - ' + cargo;
+            const cargo = usuario.cargo ? usuario.cargo.charAt(0).toUpperCase() + usuario.cargo.slice(1) : 'Operador';
+            document.getElementById('nomeUsuario').textContent = usuario.nome;
+            document.getElementById('cargoUsuario').textContent = cargo;
             document.getElementById('avatarInicial').textContent = usuario.nome.charAt(0).toUpperCase();
+            document.getElementById('saudacaoNome').textContent = 'Olá, ' + usuario.nome.split(' ')[0] + '!';
 
-            if (usuario.cargo === 'admin') {
-                const adminBtn = document.createElement('a');
-                adminBtn.href = 'pagina_admin.html';
-                adminBtn.className = 'bg-blue-600 text-white font-extrabold py-6 px-6 text-lg rounded-2xl text-center shadow-xl hover:bg-blue-500 transform hover:-translate-y-1 transition-all duration-200 uppercase tracking-wide';
-                adminBtn.textContent = 'Painel Administrativo';
-                document.querySelector('.grid').appendChild(adminBtn);
+            // Se for admin, adiciona o card do Painel Administrativo
+            if (usuario.cargo === 'admin' || usuario.cargo === 'Administrador') {
+                const acoesGrid = document.getElementById('acoesGrid');
+                const adminCard = document.createElement('a');
+                adminCard.href = 'pagina_admin.html';
+                adminCard.className = 'action-card';
+                adminCard.style.borderColor = 'rgba(139, 92, 246, 0.35)';
+                adminCard.style.background = '#151728';
+                adminCard.innerHTML = `
+                    <div>
+                        <div class="action-header">
+                            <div class="action-icon" style="background: rgba(139, 92, 246, 0.15); border-color: rgba(139, 92, 246, 0.3); color: #a78bfa;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="14" width="7" height="7"></rect>
+                                    <rect x="3" y="14" width="7" height="7"></rect>
+                                </svg>
+                            </div>
+                            <h3 class="action-title">Painel Administrativo</h3>
+                        </div>
+                        <p class="action-desc">Gestão de relatórios, pedidos pendentes e liberação de solicitações de equipamentos.</p>
+                    </div>
+                    <div class="action-footer" style="color: #a78bfa;">
+                        Abrir Gestão →
+                    </div>
+                `;
+                acoesGrid.appendChild(adminCard);
             }
         }
+
         function logout() {
             localStorage.removeItem('usuarioLogado');
             window.location.href = 'index.html';

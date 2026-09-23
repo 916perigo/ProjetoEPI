@@ -3,80 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Admin - Solicitações de EPI</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../front_livros/css/relatorios.css">
-    
+    <title>Solicitações de EPI | EPI Check</title>
+    <link rel="stylesheet" href="css/theme.css">
+    <style>
+        .table-actions-cell {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .btn-action-deliver {
+            background: var(--color-success-bg);
+            color: var(--color-success);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            padding: 0.4rem 0.75rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-action-deliver:hover:not(:disabled) {
+            background: var(--color-success);
+            color: #000;
+        }
+
+        .btn-action-delete {
+            background: var(--color-danger-bg);
+            color: var(--color-danger);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            padding: 0.4rem 0.75rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-action-delete:hover {
+            background: var(--color-danger);
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
 
-    <header class="d-flex justify-content-between align-items-center">
-        <h1 class="logo-title">EPI Check <span style="font-size: 0.6em; color: #fff;">| Admin</span></h1>
-        <div class="user-area d-flex align-items-center">
-            <span>Olá, <strong>Administrador</strong></span>
-            <a href="/login/logout" class="btn btn-sm btn-outline-warning">Sair</a>
+    <!-- Header Padrão Unificado -->
+    <header class="app-header">
+        <a href="pagina_principal.html" class="app-brand">
+            <div class="app-brand-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="app-brand-title">EPI <span>CHECK</span></h1>
+                <span class="app-brand-subtitle">Gestão de Pedidos</span>
+            </div>
+        </a>
+
+        <div class="app-user-nav">
+            <a href="pagina_admin.html" class="btn-secondary-epi" style="padding: 0.45rem 0.9rem; font-size: 0.8rem;">← Painel Admin</a>
+            <a href="pagina_principal.html" class="btn-secondary-epi" style="padding: 0.45rem 0.9rem; font-size: 0.8rem;">Central</a>
         </div>
     </header>
 
-    <div class="admin-container">
-        
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="page-title">Solicitações de EPI Recebidas</h2>
-            <a href="/admin" class="btn btn-secondary">← Voltar à Central</a>
-        </div>
+    <main class="app-container">
+        <a href="pagina_principal.html" class="btn-back-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+            </svg>
+            Voltar ao Dashboard
+        </a>
 
-        <div class="table-responsive">
-            <table class="table table-epi table-hover">
-                <thead>
-                    <tr>
-                        <th width="30%">Funcionário</th>
-                        <th width="30%">EPI Solicitado</th>
-                        <th width="20%">Data / Hora</th>
-                        <th width="20%" class="text-center">Ação</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (!empty($listaSolicitacoes)): ?>
-                        <?php foreach ($listaSolicitacoes as $pedido): ?>
-                            <tr>
-                                <td>
-                                    <strong><?php echo htmlspecialchars($pedido['funcionario']); ?></strong>
-                                    <br>
-                                    <small class="text-muted">Matrícula: <?php echo htmlspecialchars($pedido['matricula']); ?></small>
-                                </td>
-                                
-                                <td>
-                                    <span class="text-white-50">
-                                        <?php echo htmlspecialchars($pedido['epi_nome']); ?>
-                                    </span>
-                                </td>
-                                
-                                <td>
-                                    <?php echo date('d/m/Y H:i', strtotime($pedido['data_hora'])); ?>
-                                    <br>
-                                    <span class="badge-pendente mt-1 d-inline-block">Pendente</span>
-                                </td>
-                                
-                                <td class="text-center">
-                                    <form action="/admin/atenderSolicitacao" method="POST" class="d-inline">
-                                        <input type="hidden" name="id_solicitacao" value="<?php echo $pedido['id']; ?>">
-                                        <button type="submit" class="btn btn-atender">Marcar como Entregue</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
+        <div class="app-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2 style="font-family: var(--font-tech); font-size: 1.4rem; color: var(--text-primary); margin-bottom: 0.25rem;">
+                        Solicitações de EPI Recebidas
+                    </h2>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">
+                        Acompanhamento de pedidos de novos equipamentos e controle de entrega.
+                    </p>
+                </div>
+                <a href="solicitar.html" class="btn-primary-epi" style="padding: 0.6rem 1.2rem; font-size: 0.85rem;">
+                    + Novo Pedido
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="app-table">
+                    <thead>
                         <tr>
-                            <td colspan="4" class="text-center py-5 text-muted">
-                                Nenhuma solicitação de EPI pendente no momento.
-                            </td>
+                            <th width="30%">Funcionário / Motivo</th>
+                            <th width="25%">EPI Solicitado</th>
+                            <th width="20%">Data / Hora</th>
+                            <th width="15%">Estado</th>
+                            <th width="10%" style="text-align: center;">Ações</th>
                         </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody id="solicitacoesTable">
+                        <tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted);">Carregando solicitações...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
+    </main>
 
+    <script src="js/pagina_admin.js"></script>
 </body>
 </html>
