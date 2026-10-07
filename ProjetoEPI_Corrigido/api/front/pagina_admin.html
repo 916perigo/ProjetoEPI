@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel Administrativo | EPI Check</title>
   <link rel="stylesheet" href="css/theme.css">
+  <!-- Supabase JS Client & Sincronização de Evidências -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabaseClient.js"></script>
   <style>
     .admin-nav-tabs {
       display: flex;
@@ -216,7 +219,7 @@
             Auditorias de Verificação IA
           </h2>
           <p style="font-size: 0.85rem; color: var(--text-muted);">
-            Registros de leitura biométrica e detecção de capacete, óculos e colete.
+            Registros de inspeção com fotos capturadas e detecção de capacete e colete.
           </p>
         </div>
         <button onclick="carregarRelatorios()" class="btn-secondary-epi" style="font-size: 0.8rem; padding: 0.5rem 1rem;">
@@ -228,15 +231,16 @@
         <table class="app-table">
           <thead>
             <tr>
-              <th width="25%">Funcionário</th>
+              <th width="10%" style="text-align: center;">Foto</th>
+              <th width="24%">Funcionário</th>
               <th width="20%">E-mail / Matrícula</th>
-              <th width="20%">Detecção IA</th>
-              <th width="15%">Status</th>
-              <th width="20%">Data / Hora</th>
+              <th width="18%">Detecção IA</th>
+              <th width="13%">Status</th>
+              <th width="15%">Data / Hora</th>
             </tr>
           </thead>
           <tbody id="relatoriosTable">
-            <tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-muted);">Carregando registros...</td></tr>
+            <tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted);">Carregando registros...</td></tr>
           </tbody>
         </table>
       </div>

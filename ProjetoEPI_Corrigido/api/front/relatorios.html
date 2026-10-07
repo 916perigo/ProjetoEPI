@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Relatórios de Verificação | EPI Check</title>
     <link rel="stylesheet" href="css/theme.css">
+    <!-- Supabase JS Client & Sincronização de Evidências -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabaseClient.js"></script>
 </head>
 <body>
 
@@ -12,7 +15,7 @@
     <header class="app-header">
         <a href="pagina_principal.html" class="app-brand">
             <div class="app-brand-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                 </svg>
             </div>
@@ -43,7 +46,7 @@
                         Histórico de Verificações Realizadas
                     </h2>
                     <p style="font-size: 0.85rem; color: var(--text-muted);">
-                        Auditorias registradas pela Inteligência Artificial na portaria.
+                        Auditorias registradas pela Inteligência Artificial com fotos de evidência.
                     </p>
                 </div>
                 <a href="verificacao.html" class="btn-primary-epi" style="padding: 0.6rem 1.2rem; font-size: 0.85rem;">
@@ -55,15 +58,16 @@
                 <table class="app-table">
                     <thead>
                         <tr>
-                            <th width="25%">Funcionário</th>
+                            <th width="10%" style="text-align: center;">Foto</th>
+                            <th width="24%">Funcionário</th>
                             <th width="20%">E-mail / Matrícula</th>
-                            <th width="25%">Detecção IA</th>
-                            <th width="15%">Estado (IA)</th>
+                            <th width="18%">Detecção IA</th>
+                            <th width="13%">Estado (IA)</th>
                             <th width="15%">Data / Hora</th>
                         </tr>
                     </thead>
                     <tbody id="relatoriosTable">
-                        <tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted);">Carregando histórico...</td></tr>
+                        <tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">Carregando histórico...</td></tr>
                     </tbody>
                 </table>
             </div>

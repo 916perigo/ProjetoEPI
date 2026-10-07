@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Verificação de EPIs | EPI Check</title>
     <!-- Fontes e Design System Unificado -->
-    <link rel="stylesheet" href="css/theme.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/theme.css?v=2.0">
+    <link rel="stylesheet" href="css/style.css?v=2.0">
     <!-- TensorFlow.js e Teachable Machine Image -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.18.0/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8.4/dist/teachablemachine-image.min.js"></script>
+    <!-- Supabase JS Client & Integração de Auditoria -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabaseClient.js?v=2.0"></script>
 </head>
 <body>
 
@@ -117,30 +123,7 @@
                             </div>
                         </div>
 
-                        <!-- 2. Óculos de Proteção -->
-                        <div class="epi-card-item" id="card-oculos">
-                            <div class="epi-card-header">
-                                <div class="epi-card-info">
-                                    <div class="epi-icon-box">👓</div>
-                                    <div>
-                                        <h4 class="epi-name">Óculos de Proteção</h4>
-                                        <span class="epi-desc">Vedação ocular contra partículas</span>
-                                    </div>
-                                </div>
-                                <span class="epi-badge-pill" id="status-oculos">Detectando...</span>
-                            </div>
-                            <div class="epi-progress-wrapper">
-                                <div class="epi-progress-meta">
-                                    <span id="pct-oculos">Confiança: 0%</span>
-                                    <span>Mín. 70%</span>
-                                </div>
-                                <div class="epi-progress-track">
-                                    <div class="epi-progress-fill" id="bar-oculos"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 3. Colete Refletivo -->
+                        <!-- 2. Colete Refletivo -->
                         <div class="epi-card-item" id="card-colete">
                             <div class="epi-card-header">
                                 <div class="epi-card-info">
@@ -189,7 +172,7 @@
             <div class="result-header">
                 <div class="result-status-icon approved" id="resStatusIcon">✓</div>
                 <h3 class="result-title approved" id="resTitle">ACESSO LIBERADO</h3>
-                <p class="panel-subtitle" id="resDesc">Todos os EPIs obrigatórios foram detectados com conformidade pela IA.</p>
+                <p class="panel-subtitle" id="resDesc">Todos os EPIs obrigatórios (Capacete e Colete) foram detectados com conformidade pela IA.</p>
             </div>
 
             <div class="result-summary-card">
@@ -204,10 +187,6 @@
                 <div class="result-row">
                     <span class="text-muted">Capacete:</span>
                     <span id="resCapacete">OK (95%)</span>
-                </div>
-                <div class="result-row">
-                    <span class="text-muted">Óculos:</span>
-                    <span id="resOculos">OK (90%)</span>
                 </div>
                 <div class="result-row">
                     <span class="text-muted">Colete:</span>
@@ -229,7 +208,7 @@
     </div>
 
     <!-- Script de Execução do Scanner -->
-    <script src="js/scanner.js"></script>
+    <script src="js/scanner.js?v=2.0"></script>
 
 </body>
 </html>

@@ -6,16 +6,12 @@
  * ============================================================================
  */
 
-// 8 Classes oficiais do Teachable Machine fornecidas pelo usuário
+// 4 Classes oficiais do Teachable Machine atualizadas
 const TM_LABELS = [
-  "Sem capacete, sem óculos e sem colete",
-  "Com capacete",
-  "Com óculos",
-  "Com colete",
-  "Com capacete e óculos",
-  "Com capacete e colete",
-  "Com óculos e colete",
-  "Com capacete, óculos e colete"
+  "sem nada",
+  "com colete",
+  "com capacete ",
+  "com tudo "
 ];
 
 // Estado Global do Scanner
@@ -28,16 +24,14 @@ const ScannerState = {
   detectionMode: 'auto_vision', // 'auto_vision' (analisa pixels da câmera), 'manual' (toggles), 'preset'
   manualOverrides: {
     capacete: false,
-    oculos: false,
     colete: false
   },
   lastSnapshot: null,
   currentPrediction: {
-    label: "Sem capacete, sem óculos e sem colete",
+    label: "sem nada",
     confidence: 0,
-    capacete: { ok: false, score: 10 },
-    oculos: { ok: false, score: 8 },
-    colete: { ok: false, score: 12 },
+    capacete: { ok: false, score: 0 },
+    colete: { ok: false, score: 0 },
     isAprovado: false
   },
   facingMode: 'user',
@@ -196,17 +190,6 @@ function startFallbackCanvas() {
       ctx.arc(centerX, centerY - 55, 56, Math.PI, Math.PI * 2);
       ctx.fill();
       ctx.fillRect(centerX - 62, centerY - 58, 124, 12);
-    }
-
-    // Óculos
-    if (ScannerState.currentPrediction.oculos.ok) {
-      ctx.fillStyle = "rgba(56, 189, 248, 0.85)";
-      ctx.strokeStyle = "#0284c7";
-      ctx.lineWidth = 3;
-      ctx.strokeRect(centerX - 35, centerY - 45, 30, 16);
-      ctx.strokeRect(centerX + 5, centerY - 45, 30, 16);
-      ctx.fillRect(centerX - 35, centerY - 45, 30, 16);
-      ctx.fillRect(centerX + 5, centerY - 45, 30, 16);
     }
 
     requestAnimationFrame(drawSimulatedFeed);
@@ -369,7 +352,7 @@ function analyzeRealWebcamPixels(tick) {
   if (!video || video.readyState < 2 || video.style.display === 'none') {
     return buildPredictionFromBooleans(
       ScannerState.manualOverrides.capacete,
-      ScannerState.manualOverrides.oculos,
+      false,
       ScannerState.manualOverrides.colete,
       12, 10, 14
     );
@@ -594,15 +577,13 @@ function analyzeRealWebcamPixels(tick) {
  */
 function evaluateManualOverrides(tick) {
   const hasCap = ScannerState.manualOverrides.capacete;
-  const hasOcu = ScannerState.manualOverrides.oculos;
   const hasCol = ScannerState.manualOverrides.colete;
 
   const jitter = Math.sin(tick * 0.05) * 2;
   const capScore = hasCap ? Math.round(94 + jitter) : Math.round(12 + jitter);
-  const ocuScore = hasOcu ? Math.round(91 + jitter) : Math.round(9 + jitter);
   const colScore = hasCol ? Math.round(89 + jitter) : Math.round(14 + jitter);
 
-  return buildPredictionFromBooleans(hasCap, hasOcu, hasCol, capScore, ocuScore, colScore);
+  return buildPredictionFromBooleans(hasCap, false, hasCol, capScore, 0, colScore);
 }
 
 /**
@@ -632,66 +613,74 @@ function evaluatePresetMode(preset, tick) {
 }
 
 /**
- * Constrói o resultado estruturado baseado nas 8 classes do Teachable Machine
+ * Constrói o resultado estruturado baseado nas classes do Teachable Machine (Capacete e Colete)
  */
 function buildPredictionFromBooleans(hasCap, hasOcu, hasCol, capScore, ocuScore, colScore) {
-  let label = "Sem capacete, sem óculos e sem colete";
+  let label = "sem nada";
 
-  if (hasCap && hasOcu && hasCol) {
-    label = "Com capacete, óculos e colete";
-  } else if (hasCap && hasOcu && !hasCol) {
-    label = "Com capacete e óculos";
-  } else if (hasCap && !hasOcu && hasCol) {
-    label = "Com capacete e colete";
-  } else if (!hasCap && hasOcu && hasCol) {
-    label = "Com óculos e colete";
-  } else if (hasCap && !hasOcu && !hasCol) {
-    label = "Com capacete";
-  } else if (!hasCap && hasOcu && !hasCol) {
-    label = "Com óculos";
-  } else if (!hasCap && !hasOcu && !hasCol) {
-    label = "Com colete";
+  if (hasCap && hasCol) {
+    label = "com tudo ";
+  } else if (hasCap && !hasCol) {
+    label = "com capacete ";
+  } else if (!hasCap && hasCol) {
+    label = "com colete";
   } else {
-    label = "Sem capacete, sem óculos e sem colete";
+    label = "sem nada";
   }
 
-  const isAprovado = hasCap && hasOcu && hasCol;
+  // Conformidade plena: Capacete e Colete
+  const isAprovado = hasCap && hasCol;
   const confidence = isAprovado 
-    ? Math.round((capScore + ocuScore + colScore) / 3) 
-    : Math.max(capScore, ocuScore, colScore, 35);
+    ? Math.round((capScore + colScore) / 2) 
+    : Math.max(capScore, colScore, 35);
 
   return {
     label: label,
     confidence: confidence,
     capacete: { ok: hasCap, score: capScore },
-    oculos: { ok: hasOcu, score: ocuScore },
     colete: { ok: hasCol, score: colScore },
     isAprovado: isAprovado
   };
 }
 
 /**
- * Mapeia label do Teachable Machine
+ * Mapeia label do Teachable Machine (Classes: "sem nada", "com colete", "com capacete ", "com tudo ")
  */
 function parseTmLabelToEpi(className, probability) {
-  const probPercent = Math.round(probability * 100);
-  const lower = className.toLowerCase();
+  const probPercent = Math.round((probability || 0) * 100);
+  const rawClass = (className || "").trim();
+  const lower = rawClass.toLowerCase();
 
-  const hasCapacete = lower.includes('capacete');
-  const hasOculos = lower.includes('óculos') || lower.includes('oculos');
-  const hasColete = lower.includes('colete');
+  let hasCapacete = false;
+  let hasColete = false;
 
-  const capScore = hasCapacete ? Math.max(88, probPercent) : Math.min(18, 100 - probPercent);
-  const ocuScore = hasOculos ? Math.max(85, probPercent - 2) : Math.min(15, 100 - probPercent);
-  const colScore = hasColete ? Math.max(90, probPercent + 1) : Math.min(12, 100 - probPercent);
+  if (lower === "com tudo" || lower.includes("tudo")) {
+    hasCapacete = true;
+    hasColete = true;
+  } else if (lower === "sem nada" || lower.includes("nada")) {
+    hasCapacete = false;
+    hasColete = false;
+  } else if (lower.includes("colete")) {
+    hasColete = true;
+    hasCapacete = false;
+  } else if (lower.includes("capacete")) {
+    hasCapacete = true;
+    hasColete = false;
+  }
 
-  const isAprovado = hasCapacete && hasOculos && hasColete;
+  // Respeita overrides manuais caso o operador use botões de teste
+  if (ScannerState.manualOverrides.capacete) hasCapacete = true;
+  if (ScannerState.manualOverrides.colete) hasColete = true;
+
+  const capScore = hasCapacete ? Math.max(88, probPercent) : Math.min(15, Math.max(5, 100 - probPercent));
+  const colScore = hasColete ? Math.max(90, probPercent) : Math.min(12, Math.max(5, 100 - probPercent));
+
+  const isAprovado = (hasCapacete && hasColete) || lower.includes("tudo");
 
   return {
-    label: className,
+    label: className || rawClass,
     confidence: probPercent,
     capacete: { ok: hasCapacete, score: capScore },
-    oculos: { ok: hasOculos, score: ocuScore },
     colete: { ok: hasColete, score: colScore },
     isAprovado: isAprovado
   };
@@ -709,7 +698,6 @@ function updatePredictionUI(pred) {
   }
 
   updateEpiRow('capacete', pred.capacete.ok, pred.capacete.score);
-  updateEpiRow('oculos', pred.oculos.ok, pred.oculos.score);
   updateEpiRow('colete', pred.colete.ok, pred.colete.score);
 
   const camContainer = document.getElementById('cameraWrapper');
@@ -770,16 +758,11 @@ function updateEpiRow(name, isOk, score) {
 
 function updateOverrideButtonsVisual() {
   const btnCap = document.getElementById('toggleBtnCapacete');
-  const btnOcu = document.getElementById('toggleBtnOculos');
   const btnCol = document.getElementById('toggleBtnColete');
 
   if (btnCap) {
     btnCap.style.background = ScannerState.currentPrediction.capacete.ok ? 'var(--color-success-bg)' : 'transparent';
     btnCap.style.borderColor = ScannerState.currentPrediction.capacete.ok ? 'var(--color-success)' : 'var(--border-subtle)';
-  }
-  if (btnOcu) {
-    btnOcu.style.background = ScannerState.currentPrediction.oculos.ok ? 'var(--color-success-bg)' : 'transparent';
-    btnOcu.style.borderColor = ScannerState.currentPrediction.oculos.ok ? 'var(--color-success)' : 'var(--border-subtle)';
   }
   if (btnCol) {
     btnCol.style.background = ScannerState.currentPrediction.colete.ok ? 'var(--color-success-bg)' : 'transparent';
@@ -847,7 +830,6 @@ function exibirModalResultado(pred) {
   const resDataHora = document.getElementById('resDataHora');
   const resNomeOperador = document.getElementById('resNomeOperador');
   const resCapacete = document.getElementById('resCapacete');
-  const resOculos = document.getElementById('resOculos');
   const resColete = document.getElementById('resColete');
 
   const usuario = JSON.parse(localStorage.getItem('usuarioLogado') || '{}');
@@ -877,7 +859,7 @@ function exibirModalResultado(pred) {
       resTitle.textContent = 'ACESSO BLOQUEADO';
       resTitle.className = 'result-title denied';
     }
-    if (resDesc) resDesc.textContent = 'Atenção! Um ou mais EPIs obrigatórios (Capacete, Óculos ou Colete) não foram identificados.';
+    if (resDesc) resDesc.textContent = 'Atenção! Um ou mais EPIs obrigatórios (Capacete ou Colete) não foram identificados.';
   }
 
   if (resCapacete) {
@@ -885,30 +867,38 @@ function exibirModalResultado(pred) {
       ? `<span class="badge-status badge-approved">Capacete OK (${pred.capacete.score}%)</span>`
       : `<span class="badge-status badge-denied">Capacete Ausente (${pred.capacete.score}%)</span>`;
   }
-  if (resOculos) {
-    resOculos.innerHTML = pred.oculos.ok
-      ? `<span class="badge-status badge-approved">Óculos OK (${pred.oculos.score}%)</span>`
-      : `<span class="badge-status badge-denied">Óculos Ausente (${pred.oculos.score}%)</span>`;
-  }
   if (resColete) {
     resColete.innerHTML = pred.colete.ok
       ? `<span class="badge-status badge-approved">Colete OK (${pred.colete.score}%)</span>`
       : `<span class="badge-status badge-denied">Colete Ausente (${pred.colete.score}%)</span>`;
   }
 
-  // Grava auditoria no localStorage (sem depender de banco de dados)
-  salvarHistoricoLocal({
+  // Objeto estruturado do registro de auditoria
+  const registroAuditoria = {
     id: Date.now(),
     funcionario: usuario.nome || 'Operador',
     email: usuario.email || 'operador@empresa.com',
     status: pred.isAprovado ? 'Aprovado' : 'Reprovado',
     detalhes: pred.label,
     capacete: pred.capacete,
-    oculos: pred.oculos,
     colete: pred.colete,
     data_hora: agora.toISOString(),
     foto: ScannerState.lastSnapshot
-  });
+  };
+
+  // 1. Grava auditoria no localStorage (disponibilidade offline/imediata)
+  salvarHistoricoLocal(registroAuditoria);
+
+  // 2. Envia para o Supabase Storage e Banco de Dados (Nuvem)
+  if (typeof enviarRegistroAuditoriaSupabase === 'function') {
+    enviarRegistroAuditoriaSupabase(registroAuditoria).then(resp => {
+      if (resp && resp.sucesso) {
+        console.log("☁️ [Supabase] Auditoria e foto sincronizadas com sucesso!");
+      }
+    }).catch(err => {
+      console.warn("ℹ️ [Supabase] Falha silenciosa no upload:", err);
+    });
+  }
 
   if (modal) modal.classList.add('active');
 }
@@ -989,15 +979,6 @@ function setupEventListeners() {
     btnCap.addEventListener('click', () => {
       ScannerState.detectionMode = 'manual';
       ScannerState.manualOverrides.capacete = !ScannerState.manualOverrides.capacete;
-      if (selectModo) selectModo.value = 'manual';
-    });
-  }
-
-  const btnOcu = document.getElementById('toggleBtnOculos');
-  if (btnOcu) {
-    btnOcu.addEventListener('click', () => {
-      ScannerState.detectionMode = 'manual';
-      ScannerState.manualOverrides.oculos = !ScannerState.manualOverrides.oculos;
       if (selectModo) selectModo.value = 'manual';
     });
   }

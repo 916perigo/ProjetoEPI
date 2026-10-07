@@ -31,8 +31,10 @@ function getApiUrl(route) {
         : `public/index.php?route=${route}`;
 }
 
+let relatoriosCache = [];
+
 /**
- * Carrega Relatórios de Verificação (API + LocalStorage)
+ * Carrega Relatórios de Verificação (Supabase + API + LocalStorage)
  */
 async function carregarRelatorios() {
     const tbody = document.getElementById('relatoriosTable');
@@ -40,42 +42,65 @@ async function carregarRelatorios() {
 
     let dados = [];
 
-    // 1. Tenta buscar da API
-    try {
-        const resposta = await fetch(getApiUrl('relatorios'));
-        const apiDados = await resposta.json();
-        if (Array.isArray(apiDados)) {
-            dados = apiDados;
+    // 1. Tenta buscar do Supabase se configurado
+    if (typeof buscarRelatoriosSupabase === 'function') {
+        try {
+            const relatoriosSupabase = await buscarRelatoriosSupabase();
+            if (Array.isArray(relatoriosSupabase) && relatoriosSupabase.length > 0) {
+                dados = [...relatoriosSupabase];
+            }
+        } catch (e) {
+            console.warn("Supabase relatórios:", e);
         }
-    } catch (e) {
-        // Fallback para dados locais
     }
 
-    // 2. Mescla com histórico local do navegador
+    // 2. Tenta buscar da API PHP se Supabase não retornou dados
+    if (dados.length === 0) {
+        try {
+            const resposta = await fetch(getApiUrl('relatorios'));
+            const apiDados = await resposta.json();
+            if (Array.isArray(apiDados)) {
+                dados = apiDados;
+            }
+        } catch (e) {}
+    }
+
+    // 3. Mescla com histórico local do navegador
     try {
         const locais = JSON.parse(localStorage.getItem('historicoVerificacoes') || '[]');
         if (Array.isArray(locais) && locais.length > 0) {
-            // Converte modelo local para formato de exibição
             const adaptados = locais.map(l => ({
                 id_leitura: l.id,
                 nome_usuario: l.funcionario,
                 email_usuario: l.email || '-',
-                detalhes: l.detalhes || 'Verificação Automática IA',
+                detalhes: l.detalhes || 'Capacete e Colete',
                 status_leitura: l.status,
-                data_leitura: l.data_hora
+                data_leitura: l.data_hora,
+                foto: l.foto || l.foto_url || null,
+                capacete: l.capacete || null,
+                colete: l.colete || null
             }));
-            dados = [...adaptados, ...dados];
+            
+            // Evita duplicatas se já vieram do Supabase
+            const idsExistentes = new Set(dados.map(d => String(d.id_leitura)));
+            adaptados.forEach(item => {
+                if (!idsExistentes.has(String(item.id_leitura))) {
+                    dados.push(item);
+                }
+            });
         }
     } catch (e) {}
 
-    // 3. Atualiza métricas
+    relatoriosCache = dados;
+
+    // 4. Atualiza métricas
     atualizarMetricas(dados);
 
-    // 4. Renderiza tabela
+    // 5. Renderiza tabela
     if (dados.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted);">
+                <td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">
                     Nenhum registro de verificação encontrado até o momento.
                 </td>
             </tr>`;
@@ -83,7 +108,7 @@ async function carregarRelatorios() {
     }
 
     tbody.innerHTML = '';
-    dados.forEach(r => {
+    dados.forEach((r, idx) => {
         const data = r.data_leitura
             ? new Date(r.data_leitura).toLocaleString('pt-BR')
             : '-';
@@ -91,16 +116,117 @@ async function carregarRelatorios() {
         const badgeClass = isOk ? 'badge-approved' : 'badge-denied';
         const statusText = isOk ? '✓ Aprovado' : '✕ Reprovado';
 
+        const itemKey = r.id_leitura ? String(r.id_leitura) : String(idx);
+
+        const fotoHtml = r.foto
+            ? `<div class="admin-foto-thumb-wrapper" onclick="abrirModalFotoVisualizacao('${itemKey}')" title="Clique para ampliar evidência">
+                 <img src="${r.foto}" alt="Evidência" class="admin-foto-thumb" />
+                 <span class="admin-foto-zoom-icon">🔍</span>
+               </div>`
+            : `<div class="admin-foto-thumb-placeholder" title="Sem foto capturada">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                   <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                   <path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z"/>
+                 </svg>
+                 <span>Sem foto</span>
+               </div>`;
+
         tbody.innerHTML += `
             <tr>
+                <td style="text-align: center; vertical-align: middle;">${fotoHtml}</td>
                 <td><strong>${r.nome_usuario || 'Operador'}</strong></td>
                 <td><span style="font-family: var(--font-mono); font-size: 0.825rem; color: var(--text-muted);">${r.email_usuario || '-'}</span></td>
-                <td><span style="font-size: 0.85rem; color: var(--text-secondary);">${r.detalhes || 'Capacete, Óculos e Colete'}</span></td>
+                <td><span style="font-size: 0.85rem; color: var(--text-secondary);">${r.detalhes || 'Capacete e Colete'}</span></td>
                 <td><span class="badge-status ${badgeClass}">${statusText}</span></td>
                 <td><span style="font-family: var(--font-mono); font-size: 0.825rem; color: var(--text-muted);">${data}</span></td>
             </tr>`;
     });
 }
+
+/**
+ * Abre modal com a foto da verificação ampliada
+ */
+function abrirModalFotoVisualizacao(id) {
+    const reg = relatoriosCache.find(r => String(r.id_leitura) === String(id)) || relatoriosCache[id];
+    if (!reg || !reg.foto) return;
+
+    let modal = document.getElementById('modalFotoAdmin');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'modalFotoAdmin';
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-foto-dialog">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+                    <div>
+                        <h3 id="modalFotoOperador" style="font-family:var(--font-tech); font-size:1.15rem; color:var(--text-primary); margin:0;">
+                            Evidência da Auditoria IA
+                        </h3>
+                        <span id="modalFotoData" style="font-size:0.8rem; color:var(--text-muted); font-family:var(--font-mono);"></span>
+                    </div>
+                    <button onclick="fecharModalFotoVisualizacao()" class="btn-secondary-epi" style="padding:0.35rem 0.75rem; font-size:0.8rem; cursor:pointer;">
+                        ✕ Fechar
+                    </button>
+                </div>
+                
+                <div class="modal-foto-img-box">
+                    <img id="modalFotoImg" src="" alt="Foto da Auditoria" />
+                </div>
+
+                <div class="modal-foto-meta-grid">
+                    <div>
+                        <span class="text-muted" style="display:block; font-size:0.75rem;">Status da Auditoria:</span>
+                        <strong id="modalFotoStatus" style="font-size:0.9rem;">-</strong>
+                    </div>
+                    <div>
+                        <span class="text-muted" style="display:block; font-size:0.75rem;">Detecção Teachable Machine:</span>
+                        <strong id="modalFotoDetalhes" style="font-size:0.9rem; color:var(--primary-gold);">-</strong>
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:flex-end;">
+                    <button onclick="fecharModalFotoVisualizacao()" class="btn-primary-epi" style="padding:0.6rem 1.4rem; font-size:0.85rem;">
+                        Concluir Visualização
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) fecharModalFotoVisualizacao();
+        });
+    }
+
+    const img = document.getElementById('modalFotoImg');
+    const nome = document.getElementById('modalFotoOperador');
+    const dataEl = document.getElementById('modalFotoData');
+    const statusEl = document.getElementById('modalFotoStatus');
+    const detalhesEl = document.getElementById('modalFotoDetalhes');
+
+    if (img) img.src = reg.foto;
+    if (nome) nome.textContent = reg.nome_usuario || 'Operador da Estação';
+    if (dataEl) dataEl.textContent = reg.data_leitura ? new Date(reg.data_leitura).toLocaleString('pt-BR') : '';
+    if (statusEl) {
+        const isOk = reg.status_leitura === 'Aprovado';
+        statusEl.innerHTML = isOk 
+            ? '<span class="badge-status badge-approved">✓ Aprovado</span>' 
+            : '<span class="badge-status badge-denied">✕ Reprovado</span>';
+    }
+    if (detalhesEl) detalhesEl.textContent = reg.detalhes || 'Capacete e Colete';
+
+    modal.classList.add('active');
+}
+
+function fecharModalFotoVisualizacao() {
+    const modal = document.getElementById('modalFotoAdmin');
+    if (modal) modal.classList.remove('active');
+}
+
+// Fecha ao pressionar ESC
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') fecharModalFotoVisualizacao();
+});
 
 /**
  * Atualiza os contadores de métricas no topo
