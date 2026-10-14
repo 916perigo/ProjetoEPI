@@ -3,32 +3,23 @@
  * SUPABASE CLIENT & INTEGRAÇÃO DE AUDITORIA DE EPIS
  * Projeto EPI Check - SENAI
  * ============================================================================
- * 
- * INSTRUÇÕES RÁPIDAS:
- * 1. Acesse seu painel no Supabase (https://supabase.com)
- * 2. Cole sua URL e a ANON KEY nas constantes abaixo:
- *    - url: "https://xyzcompany.supabase.co"
- *    - anonKey: "eyJhbGciOi..."
- * 3. No menu "Storage", crie um Bucket chamado "fotos-verificacoes" (marcado como Public).
- * ============================================================================
  */
 
 const SUPABASE_CONFIG = {
-  // ─── COLE SUAS CREDENCIAIS DO SUPABASE AQUI ───────────────────────────────
-  url: "https://SUA_URL_DO_SUPABASE_AQUI.supabase.co",
-  anonKey: "SUA_CHAVE_ANONIMA_DO_SUPABASE_AQUI",
+  url: "https://ffulqqqntbphxlprhiem.supabase.co",
+  anonKey: "sb_publishable_rlffLURXSOSK_hlgPO970g_6BM6-b50",
   bucketName: "fotos-verificacoes",
   tableName: "verificacoes"
 };
 
-// Cliente Supabase instanciado globalmente
-let supabase = null;
+// Instância do cliente armazenada com nome único para evitar redeclarações
+let supabaseInstance = null;
 
 /**
  * Inicializa o cliente do Supabase de forma segura
  */
 function initSupabase() {
-  if (supabase) return supabase;
+  if (supabaseInstance) return supabaseInstance;
 
   const isConfigured = 
     SUPABASE_CONFIG.url && 
@@ -43,9 +34,9 @@ function initSupabase() {
 
   try {
     if (window.supabase && typeof window.supabase.createClient === 'function') {
-      supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+      supabaseInstance = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
       console.log("✅ [Supabase] Conectado com sucesso!");
-      return supabase;
+      return supabaseInstance;
     }
   } catch (err) {
     console.error("❌ [Supabase] Erro ao instanciar cliente:", err);
@@ -77,9 +68,6 @@ function dataURLtoBlob(dataurl) {
 
 /**
  * Envia uma foto para o Supabase Storage e retorna sua URL pública
- * @param {string} base64DataUrl - Imagem em Base64
- * @param {string} prefixo - Prefixo para o nome do arquivo
- * @returns {Promise<string|null>} URL pública da foto ou null se não configurado
  */
 async function uploadFotoParaSupabase(base64DataUrl, prefixo = 'verificacao') {
   const client = initSupabase();
@@ -105,7 +93,6 @@ async function uploadFotoParaSupabase(base64DataUrl, prefixo = 'verificacao') {
       return null;
     }
 
-    // Obtém a URL pública do arquivo
     const { data: publicUrlData } = client.storage
       .from(SUPABASE_CONFIG.bucketName)
       .getPublicUrl(fileName);
@@ -119,12 +106,10 @@ async function uploadFotoParaSupabase(base64DataUrl, prefixo = 'verificacao') {
 
 /**
  * Envia o registro completo de auditoria para o Supabase (Storage + Tabela)
- * @param {Object} registro - Dados da verificação
  */
 async function enviarRegistroAuditoriaSupabase(registro) {
   let fotoUrl = null;
 
-  // 1. Tenta fazer upload da foto para o Supabase Storage se configurado
   if (registro.foto && registro.foto.startsWith('data:image')) {
     fotoUrl = await uploadFotoParaSupabase(registro.foto, `operador_${registro.id || Date.now()}`);
   }
@@ -135,7 +120,6 @@ async function enviarRegistroAuditoriaSupabase(registro) {
   }
 
   try {
-    // 2. Insere na tabela 'verificacoes'
     const payload = {
       funcionario: registro.funcionario || 'Operador',
       email: registro.email || '-',
@@ -145,7 +129,7 @@ async function enviarRegistroAuditoriaSupabase(registro) {
       capacete_score: Number((registro.capacete && registro.capacete.score) || 0),
       colete_ok: Boolean(registro.colete && registro.colete.ok),
       colete_score: Number((registro.colete && registro.colete.score) || 0),
-      foto_url: fotoUrl || registro.foto, // se upload falhou ou for base64, salva fallback
+      foto_url: fotoUrl || registro.foto,
       data_hora: registro.data_hora || new Date().toISOString()
     };
 

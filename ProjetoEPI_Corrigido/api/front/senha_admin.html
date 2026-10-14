@@ -25,9 +25,6 @@
       <div class="form-group">
         <label for="password" class="form-label">Chave de Autorização Admin</label>
         <input type="password" class="form-control-epi" id="password" placeholder="••••••••" required autofocus>
-        <small style="font-size: 0.72rem; color: var(--text-dim); display: block; margin-top: 0.35rem;">
-          Chave padrão do sistema: <strong>admin123</strong>
-        </small>
       </div>
 
       <button type="submit" class="btn-login" style="margin-top: 0.5rem;">Avançar para Cadastro</button>
@@ -48,7 +45,7 @@
       if (pwd === "admin123" || pwd === "admin") {
         window.location.href = 'cadastro_usuario.html';
       } else {
-        alert('❌ Senha administrativa incorreta! Tente novamente ou use "admin123".');
+        alert('❌ Senha administrativa incorreta!');
         document.getElementById('password').value = '';
         document.getElementById('password').focus();
       }

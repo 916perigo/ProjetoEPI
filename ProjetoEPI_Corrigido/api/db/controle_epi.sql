@@ -76,18 +76,18 @@ LEFT JOIN imagens_leitura img ON l.id_leitura = img.id_leitura;
 -- Inserção de EPIs de Exemplo
 INSERT INTO epis (nome_epi) VALUES 
 ('Capacete de Segurança'),
-('Óculos de Proteção Incolor'),
-('Protetor Auricular Abafador'),
-('Máscara Respiratória PFF2'),
-('Luvas de Raspa de Couro'),
-('Botas de Segurança com Biqueira de Aço'),
-('Colete Retrorrefletor de Alta Visibilidade');
+('Colete Refletivo');
 
 -- Inserção de Utilizadores de Exemplo (Senhas em Texto Simples)
 INSERT INTO usuarios (nome, matricula, cargo, email, senha) VALUES 
-('Carlos Silva', 'MAT1', 'operador', 'carlos.silva@empresa.com', 'carlos123'),
-('Ana Rodrigues', 'MAT2', 'operador', 'ana.rodrigues@empresa.com', 'ana@2026'),
-('Ricardo Santos', 'MAT3', 'operador', 'ricardo.santos@empresa.com', 'mudar123'),
-('Mariana Costa', 'MAT4', 'operador', 'mariana.costa@empresa.com', 'senhaSegura!'),
-('Vítor Oliveira', 'MAT5', 'operador', 'vitor.oliveira@empresa.com', 'vitor@portaria');
+('Cauã Munhoz', 'MAT1', 'admin', 'caua.munhoz@gmail.com', 'caua123'),
+('Beatriz Borges', 'MAT2', 'operador', 'bia.borges@gmail.com', 'bia123');
+
+
+
+select * from usuarios;
+select * from solicitacoes;
+select * from leituras_epi;
+select * from epis;
+
 
