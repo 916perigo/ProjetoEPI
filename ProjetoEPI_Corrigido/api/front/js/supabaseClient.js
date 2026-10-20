@@ -21,14 +21,11 @@ let supabaseInstance = null;
 function initSupabase() {
   if (supabaseInstance) return supabaseInstance;
 
-  const isConfigured = 
-    SUPABASE_CONFIG.url && 
-    SUPABASE_CONFIG.anonKey && 
-    !SUPABASE_CONFIG.url.includes("SUA_URL_DO_SUPABASE_AQUI") && 
-    !SUPABASE_CONFIG.anonKey.includes("SUA_CHAVE_ANONIMA_DO_SUPABASE_AQUI");
+  // Verifica se as credenciais foram informadas
+  const isConfigured = Boolean(SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey);
 
   if (!isConfigured) {
-    console.info("ℹ️ [Supabase] Chaves ainda não configuradas em js/supabaseClient.js. As fotos e relatórios serão salvos localmente até a inserção das credenciais.");
+    console.info("ℹ️ [Supabase] Chaves não configuradas.");
     return null;
   }
 

@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function initUsuarioInfo() {
   const usuario = JSON.parse(localStorage.getItem('usuarioLogado') || '{}');
   const nomeExibicao = usuario.nome || 'Operador da Estação';
-  
+
   const infoEl = document.getElementById('infoUsuario');
   const avatarEl = document.getElementById('avatarInicial');
 
@@ -219,7 +219,7 @@ async function tryLoadLocalTmModel() {
         // Normal se weights.bin não tiver sido enviado em formato binário
       }
     }
-  } catch (err) {}
+  } catch (err) { }
 
   // Ativa o motor de visão por pixels
   if (modelStatus) modelStatus.textContent = 'IA: Visão Computacional Ativa';
@@ -231,7 +231,7 @@ async function tryLoadLocalTmModel() {
 async function loadTmFromUrl(customUrl) {
   const modelStatus = document.getElementById('modelStatus');
   const urlInput = customUrl || prompt("Insira a URL do seu modelo do Google Teachable Machine:\n(Ex: https://teachablemachine.withgoogle.com/models/ABC123XYZ/)");
-  
+
   if (!urlInput) return;
 
   let cleanUrl = urlInput.trim();
@@ -270,7 +270,7 @@ async function carregarWeightsBinManual(file) {
     ScannerState.modelSource = 'tm_local';
     if (modelStatus) modelStatus.textContent = 'IA TM: 100% Ativa com Pesos';
     alert('✅ Arquivo weights.bin carregado com sucesso!');
-  } catch(e) {
+  } catch (e) {
     console.error(e);
     alert('Erro ao carregar weights.bin: ' + e.message);
   }
@@ -312,7 +312,7 @@ async function evaluateFrame(tick) {
         }
       }
       return parseTmLabelToEpi(topPrediction.className, topPrediction.probability);
-    } catch (err) {}
+    } catch (err) { }
   }
 
   // Modo 2: Modo Manual de Overrides (toggles do usuário)
@@ -420,12 +420,12 @@ function analyzeRealWebcamPixels(tick) {
   const faceY = skinPxCount > 20 ? Math.round(skinYsum / skinPxCount) : Math.round(H * 0.35);
 
   // Regiões relativas ao rosto detectado
-  const crownY1  = Math.max(0,       faceY - Math.round(H * 0.38));
-  const crownY2  = Math.max(1,       faceY - Math.round(H * 0.12));
-  const eyeY1    = Math.max(0,       faceY - Math.round(H * 0.12));
-  const eyeY2    = Math.min(H - 1,   faceY + Math.round(H * 0.04));
-  const torsoY1  = Math.min(H - 2,   faceY + Math.round(H * 0.20));
-  const torsoY2  = Math.min(H - 1,   faceY + Math.round(H * 0.75));
+  const crownY1 = Math.max(0, faceY - Math.round(H * 0.38));
+  const crownY2 = Math.max(1, faceY - Math.round(H * 0.12));
+  const eyeY1 = Math.max(0, faceY - Math.round(H * 0.12));
+  const eyeY2 = Math.min(H - 1, faceY + Math.round(H * 0.04));
+  const torsoY1 = Math.min(H - 2, faceY + Math.round(H * 0.20));
+  const torsoY2 = Math.min(H - 1, faceY + Math.round(H * 0.75));
 
   const faceX1 = Math.floor(W * 0.30);
   const faceX2 = Math.floor(W * 0.70);
@@ -462,12 +462,12 @@ function analyzeRealWebcamPixels(tick) {
 
       // Capacete de cor sólida e saturada (amarelo/laranja/vermelho/azul/verde)
       const isColorHelmet = s > 0.30 * brightFactor && v > 0.25 &&
-        ((h >= 35  && h <= 65)  ||   // Amarelo/Âmbar
-         (h >= 15  && h < 35)   ||   // Laranja
-         (h >= 0   && h < 15)   ||   // Vermelho quente
-         (h >= 340 && h <= 360) ||   // Vermelho frio
-         (h >= 195 && h <= 250) ||   // Azul
-         (h >= 90  && h <= 160));     // Verde
+        ((h >= 35 && h <= 65) ||   // Amarelo/Âmbar
+          (h >= 15 && h < 35) ||   // Laranja
+          (h >= 0 && h < 15) ||   // Vermelho quente
+          (h >= 340 && h <= 360) ||   // Vermelho frio
+          (h >= 195 && h <= 250) ||   // Azul
+          (h >= 90 && h <= 160));     // Verde
 
       // Capacete branco/refletivo: muito claro e pouco saturado mas bem diferente da pele
       const isWhiteHelmet = v > 0.78 && s < 0.22 && skinDiff > 40;
@@ -498,9 +498,9 @@ function analyzeRealWebcamPixels(tick) {
       vestTotal++;
 
       // Fluorescente: saturação alta + matiz no range amarelo-verde ou laranja
-      const isFluorescentYellow = (h >= 45 && h <= 90  && s > 0.50 && v > 0.55);
-      const isFluorescentOrange = (h >= 15 && h < 45   && s > 0.55 && v > 0.50);
-      const isFluorescentGreen  = (h >= 90 && h <= 135 && s > 0.45 && v > 0.45);
+      const isFluorescentYellow = (h >= 45 && h <= 90 && s > 0.50 && v > 0.55);
+      const isFluorescentOrange = (h >= 15 && h < 45 && s > 0.55 && v > 0.50);
+      const isFluorescentGreen = (h >= 90 && h <= 135 && s > 0.45 && v > 0.45);
 
       // Faixa refletiva: pixel muito brilhante isolado
       const isReflective = v > 0.85 && s < 0.18;
@@ -559,9 +559,9 @@ function analyzeRealWebcamPixels(tick) {
   }
 
   const eyeScan = eyeScanPx || 1;
-  const darkRatio  = eyeDarkness   / eyeScan;
-  const refRatio   = eyeReflection / eyeScan;
-  const edgeRate   = edgeTransitions / ((eyeY2 - eyeY1) * (faceX2 - faceX1) / (W * H) * eyeScan || 1);
+  const darkRatio = eyeDarkness / eyeScan;
+  const refRatio = eyeReflection / eyeScan;
+  const edgeRate = edgeTransitions / ((eyeY2 - eyeY1) * (faceX2 - faceX1) / (W * H) * eyeScan || 1);
 
   // Pontuação composta: óculos de proteção causam escuridão e transições abruptas
   const glassesSignal = (darkRatio * 2.0) + (refRatio * 0.8) + (Math.min(edgeRate, 1) * 0.5);
@@ -630,8 +630,8 @@ function buildPredictionFromBooleans(hasCap, hasOcu, hasCol, capScore, ocuScore,
 
   // Conformidade plena: Capacete e Colete
   const isAprovado = hasCap && hasCol;
-  const confidence = isAprovado 
-    ? Math.round((capScore + colScore) / 2) 
+  const confidence = isAprovado
+    ? Math.round((capScore + colScore) / 2)
     : Math.max(capScore, colScore, 35);
 
   return {
@@ -886,30 +886,18 @@ function exibirModalResultado(pred) {
     foto: ScannerState.lastSnapshot
   };
 
-  // 1. Grava auditoria no localStorage (disponibilidade offline/imediata)
-  salvarHistoricoLocal(registroAuditoria);
-
-  // 2. Envia para o Supabase Storage e Banco de Dados (Nuvem)
+  // Envia EXCLUSIVAMENTE para o Supabase
   if (typeof enviarRegistroAuditoriaSupabase === 'function') {
     enviarRegistroAuditoriaSupabase(registroAuditoria).then(resp => {
       if (resp && resp.sucesso) {
-        console.log("☁️ [Supabase] Auditoria e foto sincronizadas com sucesso!");
+        console.log("☁️ [Supabase] Auditoria registrada na nuvem!");
       }
     }).catch(err => {
-      console.warn("ℹ️ [Supabase] Falha silenciosa no upload:", err);
+      console.warn("⚠️ [Supabase] Erro no envio:", err);
     });
   }
 
   if (modal) modal.classList.add('active');
-}
-
-function salvarHistoricoLocal(registro) {
-  try {
-    const historico = JSON.parse(localStorage.getItem('historicoVerificacoes') || '[]');
-    historico.unshift(registro);
-    if (historico.length > 50) historico.pop();
-    localStorage.setItem('historicoVerificacoes', JSON.stringify(historico));
-  } catch (e) {}
 }
 
 function fecharModalResultado() {
@@ -945,11 +933,11 @@ function tocarSomFeedback(aprovado) {
       osc.start();
       osc.stop(ctx.currentTime + 0.4);
     }
-  } catch (e) {}
+  } catch (e) { }
 }
 
 /**
- * 7. Configura eventos e controles na tela
+ * Configura eventos e controles na tela
  */
 function setupEventListeners() {
   const btnValidar = document.getElementById('btnValidar');

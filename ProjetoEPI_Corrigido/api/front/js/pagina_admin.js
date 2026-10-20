@@ -1,7 +1,8 @@
 /**
  * ============================================================================
  * CONTROLE DO PAINEL ADMINISTRATIVO (PAGINA_ADMIN.JS)
- * Suporte a API PHP e Fallback Dinâmico com LocalStorage
+ * Busca Exclusiva via Supabase / API
+ * (Desabilitar o Cache do Navegador para melhorar a experiência do Usuário)
  * ============================================================================
  */
 
@@ -34,7 +35,7 @@ function getApiUrl(route) {
 let relatoriosCache = [];
 
 /**
- * Carrega Relatórios de Verificação (Supabase + API + LocalStorage)
+ * Carrega Relatórios de Verificação (Apenas Supabase / API Nuvem)
  */
 async function carregarRelatorios() {
     const tbody = document.getElementById('relatoriosTable');
@@ -42,7 +43,7 @@ async function carregarRelatorios() {
 
     let dados = [];
 
-    // 1. Tenta buscar do Supabase se configurado
+    // 1. Tenta buscar do Supabase
     if (typeof buscarRelatoriosSupabase === 'function') {
         try {
             const relatoriosSupabase = await buscarRelatoriosSupabase();
@@ -65,31 +66,7 @@ async function carregarRelatorios() {
         } catch (e) {}
     }
 
-    // 3. Mescla com histórico local do navegador
-    try {
-        const locais = JSON.parse(localStorage.getItem('historicoVerificacoes') || '[]');
-        if (Array.isArray(locais) && locais.length > 0) {
-            const adaptados = locais.map(l => ({
-                id_leitura: l.id,
-                nome_usuario: l.funcionario,
-                email_usuario: l.email || '-',
-                detalhes: l.detalhes || 'Capacete e Colete',
-                status_leitura: l.status,
-                data_leitura: l.data_hora,
-                foto: l.foto || l.foto_url || null,
-                capacete: l.capacete || null,
-                colete: l.colete || null
-            }));
-            
-            // Evita duplicatas se já vieram do Supabase
-            const idsExistentes = new Set(dados.map(d => String(d.id_leitura)));
-            adaptados.forEach(item => {
-                if (!idsExistentes.has(String(item.id_leitura))) {
-                    dados.push(item);
-                }
-            });
-        }
-    } catch (e) {}
+    // O passo 3 (mesclagem com localStorage) foi removido para evitar duplicatas!
 
     relatoriosCache = dados;
 
@@ -331,8 +308,6 @@ async function carregarSolicitacoes() {
  * Marca como entregue no banco e no localStorage
  */
 async function marcarComoEntregue(btn, idSolicitacao) {
-    const row = btn.closest('tr');
-
     // Atualiza no localStorage
     try {
         const locais = JSON.parse(localStorage.getItem('solicitacoesLocais') || '[]');
