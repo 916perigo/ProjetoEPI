@@ -9,6 +9,7 @@ Falha humana e desatenção: Em horários de pico (troca de turno), porteiros n�
 Falta de evidências e histórico: Quando ocorre um acidente ou fiscalização trabalhista, a empresa dificilmente tem provas documentais de que o colaborador entrou no local devidamente equipado naquele dia e horário.
 Processos burocráticos e lentos de troca: EPIs danificados ou desgastados demoram a ser substituídos por falta de um canal ágil de solicitação, levando o colaborador a trabalhar desprotegido.
 Riscos jurídicos e humanos: O não cumprimento da NR-6 expõe a empresa a multas pesadas, paralisações e, principalmente, coloca a vida e a integridade física dos trabalhadores em risco diário.
+
 3. A Solução
 O EPI Check automatiza e digitaliza todo o ciclo de segurança na portaria através de três pilares:
 
