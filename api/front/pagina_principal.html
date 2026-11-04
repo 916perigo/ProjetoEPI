@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Principal | EPI Check</title>
     <link rel="stylesheet" href="css/theme.css">
+    <script src="js/theme.js"></script>
     <style>
         .dashboard-container {
             max-width: 1040px;
@@ -16,7 +17,7 @@
         }
 
         .dashboard-hero {
-            background: #111827;
+            background: var(--bg-card);
             border: 1px solid var(--border-card);
             border-radius: var(--radius-lg);
             padding: 2rem 2.25rem;
@@ -51,7 +52,7 @@
         }
 
         .action-card {
-            background: #111827;
+            background: var(--bg-card);
             border: 1px solid var(--border-card);
             border-radius: var(--radius-lg);
             padding: 2.25rem 2rem;
@@ -71,7 +72,7 @@
         }
 
         .action-card-primary {
-            background: #121929;
+            background: var(--bg-card-accent);
             border-color: rgba(245, 158, 11, 0.22);
         }
 
@@ -236,7 +237,7 @@
             <a href="solicitar.html" class="action-card">
                 <div>
                     <div class="action-header">
-                        <div class="action-icon" style="background: rgba(59, 130, 246, 0.12); border-color: rgba(59, 130, 246, 0.3); color: #60a5fa;">
+                        <div class="action-icon" style="background: rgba(59, 130, 246, 0.12); border-color: rgba(59, 130, 246, 0.3); color: var(--accent-blue);">
                             <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M12 4v16m8-8H4"></path>
                             </svg>
@@ -245,7 +246,7 @@
                     </div>
                     <p class="action-desc">Registro de pedidos de substituição ou novos equipamentos para manutenção ou desgaste.</p>
                 </div>
-                <div class="action-footer" style="color: #60a5fa;">
+                <div class="action-footer" style="color: var(--accent-blue);">
                     Fazer Pedido →
                 </div>
             </a>
@@ -281,11 +282,11 @@
                 adminCard.href = 'pagina_admin.html';
                 adminCard.className = 'action-card';
                 adminCard.style.borderColor = 'rgba(139, 92, 246, 0.35)';
-                adminCard.style.background = '#151728';
+                adminCard.style.background = 'var(--bg-card-violet)';
                 adminCard.innerHTML = `
                     <div>
                         <div class="action-header">
-                            <div class="action-icon" style="background: rgba(139, 92, 246, 0.15); border-color: rgba(139, 92, 246, 0.3); color: #a78bfa;">
+                            <div class="action-icon" style="background: rgba(139, 92, 246, 0.15); border-color: rgba(139, 92, 246, 0.3); color: var(--accent-violet);">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="3" y="3" width="7" height="7"></rect>
                                     <rect x="14" y="3" width="7" height="7"></rect>
@@ -297,7 +298,7 @@
                         </div>
                         <p class="action-desc">Gestão de relatórios, pedidos pendentes e liberação de solicitações de equipamentos.</p>
                     </div>
-                    <div class="action-footer" style="color: #a78bfa;">
+                    <div class="action-footer" style="color: var(--accent-violet);">
                         Abrir Gestão →
                     </div>
                 `;

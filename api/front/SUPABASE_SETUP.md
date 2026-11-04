@@ -1,4 +1,4 @@
-# 🚀 Configuração do Supabase (Fotos & Relatórios de EPI)
+# Configuração do Supabase (Fotos & Relatórios de EPI)
 
 Siga os 3 passos simples abaixo no seu painel do Supabase ([https://supabase.com](https://supabase.com)):
 

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel Administrativo | EPI Check</title>
   <link rel="stylesheet" href="css/theme.css">
+    <script src="js/theme.js"></script>
   <!-- Supabase JS Client & Sincronização de Evidências -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabaseClient.js"></script>
@@ -35,7 +36,7 @@
 
     .admin-tab-btn:hover {
       color: var(--text-primary);
-      background: rgba(255, 255, 255, 0.04);
+      background: rgba(var(--tint-rgb), 0.04);
     }
 
     .admin-tab-btn.active {
@@ -152,7 +153,7 @@
         <div class="app-avatar" style="background: #3b82f6;">A</div>
         <div class="app-user-info">
           <span id="nomeAdmin" class="app-user-name">Administrador</span>
-          <span class="app-user-role" style="color: #60a5fa;">Acesso Total</span>
+          <span class="app-user-role" style="color: var(--accent-blue);">Acesso Total</span>
         </div>
       </div>
       <a href="pagina_principal.html" class="btn-secondary-epi" style="padding: 0.45rem 0.9rem; font-size: 0.8rem;">← Central</a>
@@ -201,7 +202,7 @@
       </div>
 
       <div class="admin-metric-card">
-        <div class="admin-metric-icon" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;">
+        <div class="admin-metric-icon" style="background: rgba(59, 130, 246, 0.15); color: var(--accent-blue);">
           🛡️
         </div>
         <div>

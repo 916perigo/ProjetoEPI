@@ -12,7 +12,7 @@
   --bg-surface: #151d2f;
   --bg-surface-hover: #1c263c;
   --bg-card: #111827;
-  --bg-card-border: rgba(255, 255, 255, 0.08);
+  --bg-card-border: rgba(var(--tint-rgb), 0.08);
   
   /* Cores da Identidade Visual */
   --primary-amber: #f59e0b;
@@ -42,8 +42,8 @@
   --text-dim: #64748b;
   
   /* Bordas & Sombras */
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-card: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(var(--tint-rgb), 0.08);
+  --border-card: rgba(var(--tint-rgb), 0.08);
   --border-focus: rgba(245, 158, 11, 0.5);
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
@@ -56,10 +56,119 @@
   --radius-lg: 16px;
   --radius-full: 9999px;
 
+  /* Cores que mudam com o tema (modo escuro) */
+  color-scheme: dark;
+  --tint-rgb: 255, 255, 255;
+  --panel-rgb: 13, 19, 33;
+  --overlay-bg: rgba(5, 8, 15, 0.85);
+  --body-gradient: radial-gradient(circle at 50% 0%, #131c2e 0%, #090d16 100%);
+  --bg-card-accent: #121929;
+  --bg-card-violet: #151728;
+  --accent-blue: #60a5fa;
+  --accent-violet: #a78bfa;
+
   /* Fontes */
   --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-tech: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ==========================================================================
+   MODO CLARO — ativado pelo botão de tema (js/theme.js)
+   ========================================================================== */
+[data-theme="light"] {
+  color-scheme: light;
+
+  --bg-deep: #eef1f6;
+  --bg-main: #f5f7fa;
+  --bg-surface: #ffffff;
+  --bg-surface-hover: #f1f4f8;
+  --bg-card: #ffffff;
+  --bg-card-border: rgba(15, 23, 42, 0.1);
+  --bg-card-accent: #fffbeb;
+  --bg-card-violet: #f5f3ff;
+
+  --primary-amber: #f59e0b;
+  --primary-amber-hover: #d97706;
+  --primary-gold: #b45309;
+  --primary-amber-glow: rgba(245, 158, 11, 0.18);
+
+  --color-success: #059669;
+  --color-success-bg: rgba(5, 150, 105, 0.1);
+  --color-success-glow: rgba(5, 150, 105, 0.2);
+  --color-danger: #dc2626;
+  --color-danger-bg: rgba(220, 38, 38, 0.08);
+  --color-danger-glow: rgba(220, 38, 38, 0.2);
+  --color-warning: #b45309;
+  --color-warning-bg: rgba(245, 158, 11, 0.12);
+  --color-info: #2563eb;
+  --color-info-bg: rgba(37, 99, 235, 0.08);
+
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+
+  --border-subtle: rgba(15, 23, 42, 0.1);
+  --border-card: rgba(15, 23, 42, 0.12);
+  --border-focus: rgba(245, 158, 11, 0.6);
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.12);
+  --shadow-glow: 0 4px 14px rgba(245, 158, 11, 0.18);
+
+  --tint-rgb: 15, 23, 42;
+  --panel-rgb: 248, 250, 252;
+  --overlay-bg: rgba(15, 23, 42, 0.45);
+  --body-gradient: radial-gradient(circle at 50% 0%, #ffffff 0%, #e8ecf2 100%);
+  --accent-blue: #2563eb;
+  --accent-violet: #7c3aed;
+}
+
+[data-theme="light"] .app-header {
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
+}
+
+/* Botão de alternar tema */
+.theme-toggle {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-card);
+  background: rgba(var(--tint-rgb), 0.05);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--primary-amber);
+  color: var(--primary-gold);
+  transform: rotate(-12deg);
+}
+
+.theme-toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--primary-amber-glow);
+  border-color: var(--primary-amber);
+}
+
+.theme-toggle svg { width: 18px; height: 18px; }
+.theme-toggle .icon-sun { display: none; }
+[data-theme="light"] .theme-toggle .icon-sun { display: block; }
+[data-theme="light"] .theme-toggle .icon-moon { display: none; }
+
+.theme-toggle.floating {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 60;
+  background: var(--bg-card);
+  box-shadow: var(--shadow-md);
 }
 
 /* Reset Global & Base */
@@ -75,7 +184,8 @@ body {
   color: var(--text-primary);
   min-height: 100vh;
   line-height: 1.5;
-  background-image: radial-gradient(circle at 50% 0%, #131c2e 0%, #090d16 100%);
+  background-image: var(--body-gradient);
+  transition: background-color 0.25s ease, color 0.25s ease;
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
 }
@@ -89,7 +199,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0.9rem 1.75rem;
-  background: rgba(15, 21, 35, 0.92);
+  background: rgba(var(--panel-rgb), 0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-subtle);
@@ -149,7 +259,7 @@ body {
   align-items: center;
   gap: 0.65rem;
   padding: 0.4rem 0.85rem;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(var(--tint-rgb), 0.04);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-full);
 }
@@ -261,7 +371,7 @@ body {
 }
 
 .btn-secondary-epi {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(var(--tint-rgb), 0.05);
   color: var(--text-primary);
   font-weight: 600;
   font-size: 0.9rem;
@@ -278,7 +388,7 @@ body {
 }
 
 .btn-secondary-epi:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(var(--tint-rgb), 0.1);
   border-color: var(--primary-amber);
   color: var(--primary-gold);
 }
@@ -296,7 +406,7 @@ body {
 }
 
 .btn-back-link:hover {
-  color: #fff;
+  color: var(--text-primary);
   transform: translateX(-4px);
 }
 
@@ -317,7 +427,7 @@ body {
 .form-control-epi {
   width: 100%;
   padding: 0.85rem 1.1rem;
-  background: rgba(12, 18, 32, 0.85);
+  background: rgba(var(--panel-rgb), 0.85);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-md);
   color: var(--text-primary);
@@ -330,7 +440,7 @@ body {
 .form-control-epi:focus {
   border-color: var(--primary-amber);
   box-shadow: 0 0 0 3px var(--primary-amber-glow);
-  background: rgba(15, 23, 42, 0.95);
+  background: rgba(var(--panel-rgb), 0.95);
 }
 
 .form-control-epi::placeholder {
@@ -375,7 +485,7 @@ body {
   overflow-x: auto;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
-  background: rgba(12, 18, 32, 0.6);
+  background: rgba(var(--panel-rgb), 0.6);
 }
 
 .app-table {
@@ -385,7 +495,7 @@ body {
 }
 
 .app-table th {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(var(--tint-rgb), 0.03);
   color: var(--text-muted);
   font-family: var(--font-mono);
   font-size: 0.75rem;
@@ -403,7 +513,7 @@ body {
 }
 
 .app-table tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(var(--tint-rgb), 0.02);
 }
 
 .app-table tr:last-child td {
@@ -414,7 +524,7 @@ body {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(5, 8, 15, 0.85);
+  background: var(--overlay-bg);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 100;
@@ -480,7 +590,7 @@ body {
   height: 52px;
   border-radius: var(--radius-sm);
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(var(--tint-rgb), 0.15);
   background: var(--bg-surface);
   cursor: pointer;
   transition: all 0.25s ease;
@@ -522,8 +632,8 @@ body {
   width: 52px;
   height: 52px;
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px dashed rgba(255, 255, 255, 0.12);
+  background: rgba(var(--tint-rgb), 0.04);
+  border: 1px dashed rgba(var(--tint-rgb), 0.12);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -549,7 +659,7 @@ body {
   max-height: 380px;
   border-radius: var(--radius-md);
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--tint-rgb), 0.1);
   background: #000;
   margin-bottom: 1rem;
   display: flex;

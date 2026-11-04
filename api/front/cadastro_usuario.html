@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Novo Operador | EPI Check</title>
     <link rel="stylesheet" href="css/theme.css">
+    <script src="js/theme.js"></script>
     <link rel="stylesheet" href="css/index_style1.css">
 </head>
 <body>
@@ -44,7 +45,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Cargo / Função</label>
-                    <select class="form-control-epi" id="role" required style="background: rgba(12, 18, 32, 0.85);">
+                    <select class="form-control-epi" id="role" required style="background: rgba(var(--panel-rgb), 0.85);">
                         <option value="operador" selected>Operador</option>
                         <option value="admin">Administrador</option>
                     </select>
@@ -54,7 +55,7 @@
             <div class="form-group">
                 <label class="form-label">Senha de Acesso</label>
                 <input type="password" class="form-control-epi" id="newPassword" placeholder="••••••••" required>
-                <div style="width: 100%; height: 4px; background: rgba(255,255,255,0.08); border-radius: var(--radius-full); margin-top: 0.45rem; overflow: hidden;">
+                <div style="width: 100%; height: 4px; background: rgba(var(--tint-rgb), 0.08); border-radius: var(--radius-full); margin-top: 0.45rem; overflow: hidden;">
                     <div id="strengthBar" style="width: 0%; height: 100%; transition: all 0.3s;"></div>
                 </div>
             </div>

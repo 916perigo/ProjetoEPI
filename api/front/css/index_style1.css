@@ -141,7 +141,7 @@ body {
 }
 
 .auth-secondary-links a:hover {
-    color: #fff;
+    color: var(--text-primary);
     text-decoration: underline;
 }
 
